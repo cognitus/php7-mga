@@ -1,0 +1,11 @@
+--- php-7.0.1/Zend/zend_portability.h.omv~	2015-12-29 03:38:23.186894098 +0100
++++ php-7.0.1/Zend/zend_portability.h	2015-12-29 03:38:48.437952703 +0100
+@@ -183,7 +183,7 @@ char *alloca();
+ # define ZEND_ATTRIBUTE_MALLOC
+ #endif
+ 
+-#if ZEND_GCC_VERSION >= 4003 || __has_attribute(alloc_size)
++#if (ZEND_GCC_VERSION >= 4003 && !defined(__clang__)) || __has_attribute(alloc_size)
+ # define ZEND_ATTRIBUTE_ALLOC_SIZE(X) __attribute__ ((alloc_size(X)))
+ # define ZEND_ATTRIBUTE_ALLOC_SIZE2(X,Y) __attribute__ ((alloc_size(X,Y)))
+ #else

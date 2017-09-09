@@ -1,0 +1,11 @@
+--- php-7.0.1/sapi/apache2handler/config.m4.install.droplet	2015-12-29 00:35:28.723395998 +0100
++++ php-7.0.1/sapi/apache2handler/config.m4	2015-12-29 00:36:14.211182883 +0100
+@@ -67,7 +67,7 @@ if test "$PHP_APXS2" != "no"; then
+   fi
+ 
+   APXS_LIBEXECDIR='$(INSTALL_ROOT)'`$APXS -q LIBEXECDIR`
+-  if test -z `$APXS -q SYSCONFDIR`; then
++  if true; then
+     INSTALL_IT="\$(mkinstalldirs) '$APXS_LIBEXECDIR' && \
+                  $APXS -S LIBEXECDIR='$APXS_LIBEXECDIR' \
+                        -i -n php7"

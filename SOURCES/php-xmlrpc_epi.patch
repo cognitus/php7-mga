@@ -1,0 +1,11 @@
+--- php-7.0.1/ext/xmlrpc/xmlrpc-epi-php.c.xmlrpc_epi_header	2015-12-29 00:12:51.764748580 +0100
++++ php-7.0.1/ext/xmlrpc/xmlrpc-epi-php.c	2015-12-29 00:15:09.654193700 +0100
+@@ -71,7 +71,7 @@
+ #include "ext/date/php_date.h"
+ #include "php_ini.h"
+ #include "php_xmlrpc.h"
+-#include "xmlrpc.h"
++#include <xmlrpc-epi/xmlrpc.h>
+ 
+ static int le_xmlrpc_server;
+ 

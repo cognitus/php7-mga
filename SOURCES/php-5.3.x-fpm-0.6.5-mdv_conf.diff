@@ -1,0 +1,83 @@
+--- php-7.0.1/sapi/fpm/php-fpm.conf.in.fpmmdv.droplet	2015-12-16 11:41:54.000000000 +0100
++++ php-7.0.1/sapi/fpm/php-fpm.conf.in	2015-12-29 00:32:32.641437818 +0100
+@@ -14,14 +14,14 @@
+ ; Pid file
+ ; Note: the default prefix is @EXPANDED_LOCALSTATEDIR@
+ ; Default Value: none
+-;pid = run/php-fpm.pid
++pid = /run/php-fpm/php-fpm.pid
+ 
+ ; Error log file
+ ; If it's set to "syslog", log is sent to syslogd instead of being written
+ ; in a local file.
+ ; Note: the default prefix is @EXPANDED_LOCALSTATEDIR@
+ ; Default Value: log/php-fpm.log
+-;error_log = log/php-fpm.log
++error_log = /var/log/php-fpm.log
+ 
+ ; syslog_facility is used to specify what type of program is logging the
+ ; message. This lets syslogd specify that messages from different facilities
+--- php-7.0.1/sapi/fpm/www.conf.in.fpmmdv.droplet	2015-12-29 00:33:15.685147449 +0100
++++ php-7.0.1/sapi/fpm/www.conf.in	2015-12-29 00:34:56.491559636 +0100
+@@ -33,7 +33,7 @@ group = @php_fpm_group@
+ ;                            (IPv6 and IPv4-mapped) on a specific port;
+ ;   '/path/to/unix/socket' - to listen on a unix socket.
+ ; Note: This value is mandatory.
+-listen = 127.0.0.1:9000
++listen = /run/php-fpm/php-fpm.sock
+ 
+ ; Set listen(2) backlog.
+ ; Default Value: 511 (-1 on FreeBSD and OpenBSD)
+@@ -104,22 +104,22 @@ pm = dynamic
+ ; forget to tweak pm.* to fit your needs.
+ ; Note: Used when pm is set to 'static', 'dynamic' or 'ondemand'
+ ; Note: This value is mandatory.
+-pm.max_children = 5
++pm.max_children = 35
+ 
+ ; The number of child processes created on startup.
+ ; Note: Used only when pm is set to 'dynamic'
+ ; Default Value: min_spare_servers + (max_spare_servers - min_spare_servers) / 2
+-pm.start_servers = 2
++pm.start_servers = 20
+ 
+ ; The desired minimum number of idle server processes.
+ ; Note: Used only when pm is set to 'dynamic'
+ ; Note: Mandatory when pm is set to 'dynamic'
+-pm.min_spare_servers = 1
++pm.min_spare_servers = 5
+ 
+ ; The desired maximum number of idle server processes.
+ ; Note: Used only when pm is set to 'dynamic'
+ ; Note: Mandatory when pm is set to 'dynamic'
+-pm.max_spare_servers = 3
++pm.max_spare_servers = 35
+ 
+ ; The number of seconds after which an idle process will be killed.
+ ; Note: Used only when pm is set to 'ondemand'
+@@ -130,7 +130,7 @@ pm.max_spare_servers = 3
+ ; This can be useful to work around memory leaks in 3rd party libraries. For
+ ; endless request processing specify '0'. Equivalent to PHP_FCGI_MAX_REQUESTS.
+ ; Default Value: 0
+-;pm.max_requests = 500
++pm.max_requests = 10000
+ 
+ ; The URI to view the FPM status page. If this value is not set, no URI will be
+ ; recognized as a status page. It shows the following informations:
+@@ -314,7 +314,7 @@ pm.max_spare_servers = 3
+ ; The log file for slow requests
+ ; Default Value: not set
+ ; Note: slowlog is mandatory if request_slowlog_timeout is set
+-;slowlog = log/$pool.log.slow
++slowlog = /var/log/$pool.log.slow
+ 
+ ; The timeout for serving a single request after which a PHP backtrace will be
+ ; dumped to the 'slowlog' file. A value of '0s' means 'off'.
+@@ -386,6 +386,7 @@ pm.max_spare_servers = 3
+ ;env[TMP] = /tmp
+ ;env[TMPDIR] = /tmp
+ ;env[TEMP] = /tmp
++env[PATH] = $PATH
+ 
+ ; Additional php.ini defines, specific to this pool of workers. These settings
+ ; overwrite the values previously defined in the php.ini. The directives are the

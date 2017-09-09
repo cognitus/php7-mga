@@ -1,0 +1,17 @@
+--- php-7.0.1/Zend/zend_portability.h.omv~	2015-12-29 00:42:17.227051483 +0100
++++ php-7.0.1/Zend/zend_portability.h	2015-12-29 00:42:37.209011427 +0100
+@@ -138,11 +138,11 @@
+ # endif
+ 
+ # if defined(RTLD_GROUP) && defined(RTLD_WORLD) && defined(RTLD_PARENT)
+-#  define DL_LOAD(libname)			dlopen(libname, RTLD_LAZY | RTLD_GLOBAL | RTLD_GROUP | RTLD_WORLD | RTLD_PARENT)
++#  define DL_LOAD(libname)			dlopen(libname, RTLD_NOW | RTLD_GLOBAL | RTLD_GROUP | RTLD_WORLD | RTLD_PARENT)
+ # elif defined(RTLD_DEEPBIND) && !defined(__SANITIZE_ADDRESS__)
+-#  define DL_LOAD(libname)			dlopen(libname, RTLD_LAZY | RTLD_GLOBAL | RTLD_DEEPBIND)
++#  define DL_LOAD(libname)			dlopen(libname, RTLD_NOW | RTLD_GLOBAL | RTLD_DEEPBIND)
+ # else
+-#  define DL_LOAD(libname)			dlopen(libname, RTLD_LAZY | RTLD_GLOBAL)
++#  define DL_LOAD(libname)			dlopen(libname, RTLD_NOW | RTLD_GLOBAL)
+ # endif
+ # define DL_UNLOAD					dlclose
+ # if defined(DLSYM_NEEDS_UNDERSCORE)

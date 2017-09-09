@@ -1,0 +1,84 @@
+--- php-5.5.4/ext/readline/config.m4.no_libedit.droplet	2013-09-18 15:08:04.000000000 +0200
++++ php-5.5.4/ext/readline/config.m4	2013-10-01 20:52:50.338402582 +0200
+@@ -2,16 +2,8 @@ dnl
+ dnl $Id$
+ dnl
+ 
+-PHP_ARG_WITH(libedit,for libedit readline replacement, 
+-[  --with-libedit[=DIR]      Include libedit readline replacement (CLI/CGI only)])
+-
+-if test "$PHP_LIBEDIT" = "no"; then
+-  PHP_ARG_WITH(readline,for readline support,
++PHP_ARG_WITH(readline,for readline support,
+   [  --with-readline[=DIR]     Include readline support (CLI/CGI only)])
+-else
+-  dnl "register" the --with-readline option to preven invalid "unknown configure option" warning
+-  php_with_readline=no
+-fi
+ 
+ if test "$PHP_READLINE" && test "$PHP_READLINE" != "no"; then
+   for i in $PHP_READLINE /usr/local /usr; do
+@@ -60,7 +52,7 @@ if test "$PHP_READLINE" && test "$PHP_RE
+     -L$READLINE_DIR/$PHP_LIBDIR $PHP_READLINE_LIBS
+   ])
+ 
+-  PHP_CHECK_LIBRARY(edit, rl_on_new_line,
++  PHP_CHECK_LIBRARY(readline, rl_on_new_line,
+   [
+     AC_DEFINE(HAVE_RL_ON_NEW_LINE, 1, [ ])
+   ],[],[
+@@ -69,18 +61,6 @@ if test "$PHP_READLINE" && test "$PHP_RE
+ 
+   AC_DEFINE(HAVE_LIBREADLINE, 1, [ ])
+ 
+-elif test "$PHP_LIBEDIT" != "no"; then
+-
+-  for i in $PHP_LIBEDIT /usr/local /usr; do
+-    test -f $i/include/editline/readline.h && LIBEDIT_DIR=$i && break
+-  done
+-
+-  if test -z "$LIBEDIT_DIR"; then
+-    AC_MSG_ERROR(Please reinstall libedit - I cannot find readline.h)
+-  fi
+-
+-  PHP_ADD_INCLUDE($LIBEDIT_DIR/include)
+-
+   AC_CHECK_LIB(ncurses, tgetent,
+   [
+     PHP_ADD_LIBRARY(ncurses,,READLINE_SHARED_LIBADD)
+@@ -90,34 +70,9 @@ elif test "$PHP_LIBEDIT" != "no"; then
+       PHP_ADD_LIBRARY(termcap,,READLINE_SHARED_LIBADD)
+     ])
+   ])
+-
+-  PHP_CHECK_LIBRARY(edit, readline,
+-  [
+-    PHP_ADD_LIBRARY_WITH_PATH(edit, $LIBEDIT_DIR/$PHP_LIBDIR, READLINE_SHARED_LIBADD)  
+-  ], [
+-    AC_MSG_ERROR(edit library required by readline not found)
+-  ], [
+-    -L$READLINE_DIR/$PHP_LIBDIR 
+-  ])
+-
+-  PHP_CHECK_LIBRARY(edit, rl_callback_read_char,
+-  [
+-    AC_DEFINE(HAVE_RL_CALLBACK_READ_CHAR, 1, [ ])
+-  ],[],[
+-    -L$READLINE_DIR/$PHP_LIBDIR
+-  ])
+-
+-  PHP_CHECK_LIBRARY(edit, rl_on_new_line,
+-  [
+-    AC_DEFINE(HAVE_RL_ON_NEW_LINE, 1, [ ])
+-  ],[],[
+-    -L$READLINE_DIR/$PHP_LIBDIR
+-  ])
+-
+-  AC_DEFINE(HAVE_LIBEDIT, 1, [ ])
+ fi
+ 
+-if test "$PHP_READLINE" != "no" || test "$PHP_LIBEDIT" != "no"; then
++if test "$PHP_READLINE" != "no" ; then
+   AC_CHECK_FUNCS([rl_completion_matches])
+   PHP_NEW_EXTENSION(readline, readline.c readline_cli.c, $ext_shared, cli)
+   PHP_SUBST(READLINE_SHARED_LIBADD)

@@ -1,0 +1,11 @@
+--- php-5.5.6/ext/gd/config.m4.omv~	2014-01-09 17:58:31.260094159 +0100
++++ php-5.5.6/ext/gd/config.m4	2014-01-09 17:59:08.580093867 +0100
+@@ -185,7 +185,7 @@ AC_DEFUN([PHP_GD_FREETYPE2],[
+   if test "$PHP_FREETYPE_DIR" != "no"; then
+ 
+     for i in $PHP_FREETYPE_DIR /usr/local /usr; do
+-      if test -f "$i/include/freetype2/freetype/freetype.h"; then
++      if test -f "$i/include/freetype2/freetype/freetype.h" -o -f "$i/include/freetype2/freetype.h"; then
+         FREETYPE2_DIR=$i
+         FREETYPE2_INC_DIR=$i/include/freetype2
+         break

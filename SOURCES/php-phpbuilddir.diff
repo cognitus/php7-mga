@@ -1,0 +1,22 @@
+--- php-5.4.1RC2/scripts/Makefile.frag.phpbuilddir.droplet	2012-04-12 07:07:50.000000000 +0200
++++ php-5.4.1RC2/scripts/Makefile.frag	2012-04-17 20:53:30.980190103 +0200
+@@ -4,7 +4,7 @@
+ #
+ 
+ phpincludedir = $(includedir)/php
+-phpbuilddir = $(libdir)/build
++phpbuilddir = $(libdir)/php/build
+ 
+ BUILD_FILES = \
+ 	scripts/phpize.m4 \
+--- php-5.4.1RC2/scripts/phpize.in.phpbuilddir.droplet	2012-04-17 20:53:30.000000000 +0200
++++ php-5.4.1RC2/scripts/phpize.in	2012-04-17 20:54:13.665191018 +0200
+@@ -4,7 +4,7 @@
+ prefix='@prefix@'
+ datarootdir='@datarootdir@'
+ exec_prefix="`eval echo @exec_prefix@`"
+-phpdir="`eval echo @libdir@`/build"
++phpdir="`eval echo @libdir@`/php/build"
+ includedir="`eval echo @includedir@`/php"
+ builddir="`pwd`"
+ SED="@SED@"

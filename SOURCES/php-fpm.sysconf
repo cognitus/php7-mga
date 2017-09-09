@@ -1,0 +1,3 @@
+# pass additional options here
+PHP_FPM_OPTIONS=""
+

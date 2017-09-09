@@ -1,0 +1,18 @@
+--- php-5.4.1RC2/aclocal.m4.cxx.droplet	2012-04-17 21:11:51.000000000 +0200
++++ php-5.4.1RC2/aclocal.m4	2012-04-17 21:12:43.372215983 +0200
+@@ -758,14 +758,7 @@ AC_DEFUN([PHP_BUILD_THREAD_SAFE],[
+ dnl
+ dnl PHP_REQUIRE_CXX
+ dnl
+-AC_DEFUN([PHP_REQUIRE_CXX],[
+-  if test -z "$php_cxx_done"; then
+-    AC_PROG_CXX
+-    AC_PROG_CXXCPP
+-    PHP_ADD_LIBRARY(stdc++)
+-    php_cxx_done=yes
+-  fi
+-])
++AC_DEFUN([PHP_REQUIRE_CXX])
+ 
+ dnl
+ dnl PHP_BUILD_SHARED
