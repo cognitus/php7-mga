@@ -18,7 +18,7 @@
 
 Summary:	The PHP7 scripting language
 Name:		php
-Version:	7.0.17
+Version:	7.1.9
 Release:	%mkrel 1
 Source0:	http://ch1.php.net/distributions/php-%{version}.tar.xz
 Group:		Development/PHP
@@ -1195,7 +1195,7 @@ simple. The most common use of PHP coding is probably as a replacement for CGI
 scripts. The %{name} module enables the apache web server to understand
 and process the embedded PHP language in web pages.
 
-This package contains PHP version 5. You'll also need to install the apache web
+This package contains PHP version 7. You'll also need to install the apache web
 server.
 
 
@@ -1246,7 +1246,7 @@ fi
 #patch28 -p1 -b .imap-myrights.droplet
 # fpm stuff
 %patch29 -p1 -b .shared-fpm.droplet
-%patch30 -p1 -b .fpmmdv.droplet
+
 
 #####################################################################
 # stolen from debian
@@ -1270,6 +1270,7 @@ fi
 %patch227 -p0 -b .enchant_lib64_fix.droplet
 %patch228 -p0 -b .xmlrpc-epi_fix.droplet
 
+
 cp %{SOURCE2} maxlifetime
 cp %{SOURCE3} php.crond
 cp %{SOURCE4} php-fpm.service
@@ -1287,6 +1288,10 @@ rm -f ext/recode/config9.m4
 find -name "*.inc" | xargs chmod 644
 find -name "*.php*" | xargs chmod 644
 find -name "*README*" | xargs chmod 644
+
+# php7_module -> php_module to ease upgrades
+find -type f |xargs sed -i -e 's,php7_module,php_module,g'
+sed -i -e 's,APLOG_USE_MODULE(php7,APLOG_USE_MODULE(php,g' sapi/apache2handler/*
 
 mkdir -p php-devel/extensions
 mkdir -p php-devel/sapi
@@ -1415,6 +1420,7 @@ for i in fpm cgi cli apxs; do
     --enable-json=shared \
     --with-openssl-dir=%{_prefix} --enable-ftp=shared \
     --with-gd=shared --with-jpeg-dir=%{_prefix} --with-png-dir=%{_prefix} --with-zlib-dir=%{_prefix} --with-xpm-dir=%{_prefix}/X11R6 --with-freetype-dir=%{_prefix} --enable-gd-native-ttf \
+    --enable-gd-jis-conv \
     --with-gettext=shared,%{_prefix} \
     --with-gmp=shared,%{_prefix} \
     --enable-hash=shared,%{_prefix} \
@@ -1495,7 +1501,6 @@ cd mod_php
 cp -dpR ../php-devel/sapi/apache2handler/* .
 cp ../main/internal_functions.c .
 cp ../ext/date/lib/timelib_config.h .
-sed -i -e 's,php7_module,php_module,g' *
 mv mod_php7.c mod_php.c
 find . -type f |xargs dos2unix
 apxs \
@@ -1812,7 +1817,7 @@ for i in modules/*.so; do
 	esac
 done
 cat >>php-test.ini <<EOF
-open_basedir=
+open_basedir="`pwd`"
 safe_mode=0
 output_buffering=0
 output_handler=0
@@ -1820,7 +1825,7 @@ magic_quotes_runtime=0
 memory_limit=1G
 
 [Session]
-session.save_path="."
+session.save_path="`pwd`"
 EOF
 
 TEST_PHP_EXECUTABLE=sapi/cli/php sapi/cli/php -n -c ./php-test.ini run-tests.php
@@ -2681,6 +2686,7 @@ fi
 %dir %{_datadir}/php
 
 %changelog
-* Sat Sep 09 2017 Tomás Flores <cognitus> 7.0.17-1.mga6
+* Sat Sep 09 2017 Tomás Flores <cognitus> 1.1.9-1.mga6
 + Ported from Openmandriva
-- 7.0.17
++ Update version
+- 7.1.9
