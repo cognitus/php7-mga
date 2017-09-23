@@ -1,5 +1,12 @@
---- php-7.0.1/ext/standard/image.c.zlib-for-getimagesize.droplet	2015-12-16 11:42:03.000000000 +0100
-+++ php-7.0.1/ext/standard/image.c	2015-12-29 00:21:45.084450620 +0100
+make compressed .swf parsing possible,
+link core php with -lz for getimagesize()
+see also http://bugs.php.net/bug.php?id=29611
+
+Patch update by Tomás Flores
+
+diff -Naur php-7.1.9-orig/ext/standard/image.c php-7.1.9-mod/ext/standard/image.c
+--- php-7.1.9-orig/ext/standard/image.c	2017-08-30 13:13:14.000000000 -0300
++++ php-7.1.9-mod/ext/standard/image.c	2017-09-22 15:06:32.926716163 -0300
 @@ -34,7 +34,7 @@
  #include "win32/php_stdint.h"
  #endif
@@ -9,7 +16,7 @@
  #include "zlib.h"
  #endif
  
-@@ -84,7 +84,7 @@ PHP_MINIT_FUNCTION(imagetypes)
+@@ -86,7 +86,7 @@
  	REGISTER_LONG_CONSTANT("IMAGETYPE_JP2",     IMAGE_FILETYPE_JP2,     CONST_CS | CONST_PERSISTENT);
  	REGISTER_LONG_CONSTANT("IMAGETYPE_JPX",     IMAGE_FILETYPE_JPX,     CONST_CS | CONST_PERSISTENT);
  	REGISTER_LONG_CONSTANT("IMAGETYPE_JB2",     IMAGE_FILETYPE_JB2,     CONST_CS | CONST_PERSISTENT);
@@ -18,7 +25,7 @@
  	REGISTER_LONG_CONSTANT("IMAGETYPE_SWC",     IMAGE_FILETYPE_SWC,     CONST_CS | CONST_PERSISTENT);
  #endif
  	REGISTER_LONG_CONSTANT("IMAGETYPE_IFF",     IMAGE_FILETYPE_IFF,     CONST_CS | CONST_PERSISTENT);
-@@ -192,7 +192,7 @@ static unsigned long int php_swf_get_bit
+@@ -195,7 +195,7 @@
  }
  /* }}} */
  
@@ -27,7 +34,7 @@
  /* {{{ php_handle_swc
   */
  static struct gfxinfo *php_handle_swc(php_stream * stream)
-@@ -1337,7 +1337,7 @@ static void php_getimagesize_from_stream
+@@ -1393,7 +1393,7 @@
  			result = php_handle_swf(stream);
  			break;
  		case IMAGE_FILETYPE_SWC:

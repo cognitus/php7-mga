@@ -1,6 +1,7 @@
---- php-5.5.4/ext/session/session.c.session.save_path.droplet	2013-10-01 22:18:16.156188206 +0200
-+++ php-5.5.4/ext/session/session.c	2013-10-01 22:21:23.486180371 +0200
-@@ -773,11 +773,11 @@ static ZEND_INI_MH(OnUpdateSmartStr) /*
+diff -Naurp php-5.5.9/ext/session/session.c php-5.5.9.oden/ext/session/session.c
+--- php-5.5.9/ext/session/session.c	2014-02-05 11:00:36.000000000 +0100
++++ php-5.5.9.oden/ext/session/session.c	2014-02-12 11:25:45.353847936 +0100
+@@ -780,11 +780,11 @@ static ZEND_INI_MH(OnUpdateSmartStr) /*
  /* {{{ PHP_INI
   */
  PHP_INI_BEGIN()

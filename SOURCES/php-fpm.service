@@ -3,11 +3,11 @@ Description=The PHP FastCGI Process Manager
 After=syslog.target network.target
 
 [Service]
-Type=forking
+Type=notify
 PIDFile=/run/php-fpm/php-fpm.pid
 EnvironmentFile=/etc/sysconfig/php-fpm
-ExecStart=/usr/sbin/php-fpm --daemonize --fpm-config /etc/php-fpm.conf $PHP_FPM_OPTIONS
-ExecReload=/bin/kill -USR2 $MAINPID
+ExecStart=/usr/sbin/php-fpm --nodaemonize --fpm-config /etc/php-fpm.conf $PHP_FPM_OPTIONS
+ExecReload=/usr/bin/kill -USR2 $MAINPID
 
 [Install]
 WantedBy=multi-user.target

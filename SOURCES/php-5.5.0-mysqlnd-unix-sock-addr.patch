@@ -1,0 +1,74 @@
+Update patch by Tomás Flores
+From 061fa11d7f90905f00893f02f0e4b1e0267b7cd5 Mon Sep 17 00:00:00 2001
+From: Olivier Blin <dev@blino.org>, 
+Date: Sun, 23 Jun 2013 23:04:47 +0200
+Subject: [PATCH] mysqlnd: detect mysql unix socket path with mysql_config
+
+When the mysql extension is disabled, there is no automatic detection
+of the mysql unix socket path.
+The mysqli/mysqlnd/pdo_mysql use a hardcoded /tmp/mysql.sock path.
+
+This adds automatic detection of the mysql unix socket path in mysqlnd
+with mysql_config --socket, and makes pdo_mysql use it as well.
+---
+ ext/mysqlnd/config9.m4    | 12 ++++++++++--
+ ext/pdo_mysql/pdo_mysql.c | 10 +++++++---
+ 2 files changed, 17 insertions(+), 5 deletions(-)
+
+
+diff -Naur php-7.1.9-orig/ext/mysqlnd/config9.m4 php-7.1.9-mod/ext/mysqlnd/config9.m4
+--- php-7.1.9-orig/ext/mysqlnd/config9.m4	2017-08-30 13:13:17.000000000 -0300
++++ php-7.1.9-mod/ext/mysqlnd/config9.m4	2017-09-22 14:54:58.770365181 -0300
+@@ -3,8 +3,9 @@
+ dnl config.m4 for mysqlnd driver
+ 
+ PHP_ARG_ENABLE(mysqlnd, whether to enable mysqlnd,
+-  [  --enable-mysqlnd        Enable mysqlnd explicitly, will be done implicitly
+-                          when required by other extensions], no, yes)
++  [  --enable-mysqlnd=FILE Enable mysqlnd explicitly, will be done implicitly
++                           when required by other extensions. FILE is the path
++                           to mysql_config.], no, yes)
+ 
+ PHP_ARG_ENABLE(mysqlnd_compression_support, whether to disable compressed protocol support in mysqlnd,
+ [  --disable-mysqlnd-compression-support
+@@ -17,6 +18,7 @@
+ 
+ dnl If some extension uses mysqlnd it will get compiled in PHP core
+ if test "$PHP_MYSQLND" != "no" || test "$PHP_MYSQLND_ENABLED" = "yes"; then
++  MYSQL_CONFIG=$PHP_MYSQLND
+   mysqlnd_ps_sources="mysqlnd_ps.c mysqlnd_ps_codec.c"
+   mysqlnd_base_sources="mysqlnd_connection.c mysqlnd_alloc.c mysqlnd_charset.c mysqlnd_wireprotocol.c \
+                    mysqlnd_loaddata.c mysqlnd_reverse_api.c mysqlnd_vio.c mysqlnd_protocol_frame_codec.c \
+@@ -44,6 +46,11 @@
+   PHP_NEW_EXTENSION(mysqlnd, $mysqlnd_sources, $ext_shared,, -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
+   PHP_ADD_BUILD_DIR([ext/mysqlnd], 1)
+   PHP_INSTALL_HEADERS([ext/mysqlnd/])
++  
++  if test -x "$MYSQL_CONFIG"; then
++    MYSQLND_SOCKET=`$MYSQL_CONFIG --socket`
++    AC_DEFINE_UNQUOTED(MYSQLND_UNIX_SOCK_ADDR, "$MYSQLND_SOCKET", [ ])
++  fi
+ fi
+ 
+ if test "$PHP_MYSQLND" != "no" || test "$PHP_MYSQLND_ENABLED" = "yes" || test "$PHP_MYSQLI" != "no"; then
+ 
+--- php-5.5.9/ext/pdo_mysql/pdo_mysql.c	2014-02-05 11:00:36.000000000 +0100
++++ php-5.5.9.oden/ext/pdo_mysql/pdo_mysql.c	2014-02-12 11:16:58.513818477 +0100
+@@ -49,10 +49,14 @@ ZEND_DECLARE_MODULE_GLOBALS(pdo_mysql)
+ # ifdef PHP_MYSQL_UNIX_SOCK_ADDR
+ #  define PDO_MYSQL_UNIX_ADDR PHP_MYSQL_UNIX_SOCK_ADDR
+ # else
+-#  if !PHP_WIN32
+-#   define PDO_MYSQL_UNIX_ADDR "/tmp/mysql.sock"
++#  ifdef MYSQLND_UNIX_SOCK_ADDR
++#   define PDO_MYSQL_UNIX_ADDR MYSQLND_UNIX_SOCK_ADDR
+ #  else
+-#   define PDO_MYSQL_UNIX_ADDR NULL
++#   if !PHP_WIN32
++#    define PDO_MYSQL_UNIX_ADDR "/tmp/mysql.sock"
++#   else
++#    define PDO_MYSQL_UNIX_ADDR NULL
++#   endif
+ #  endif
+ # endif
+ #endif

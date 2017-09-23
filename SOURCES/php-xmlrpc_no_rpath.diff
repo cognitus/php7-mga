@@ -1,6 +1,7 @@
---- ext/xmlrpc/config.m4	2007-06-11 11:48:59.000000000 +0200
-+++ ext/xmlrpc/config.m4.oden	2007-06-11 12:21:28.000000000 +0200
-@@ -49,7 +49,7 @@
+diff -Naurp php-5.5.9/ext/xmlrpc/config.m4 php-5.5.9.oden/ext/xmlrpc/config.m4
+--- php-5.5.9/ext/xmlrpc/config.m4	2014-02-05 11:00:36.000000000 +0100
++++ php-5.5.9.oden/ext/xmlrpc/config.m4	2014-02-12 11:14:12.375809187 +0100
+@@ -49,7 +49,7 @@ if test "$PHP_XMLRPC" != "no"; then
      for i in $PHP_LIBEXPAT_DIR $XMLRPC_DIR /usr/local /usr; do
        if test -f $i/$PHP_LIBDIR/libexpat.a || test -f $i/$PHP_LIBDIR/libexpat.$SHLIB_SUFFIX_NAME; then
          AC_DEFINE(HAVE_LIBEXPAT,1,[ ])
@@ -9,7 +10,7 @@
          PHP_ADD_INCLUDE($i/include)
          testval=yes
          break
-@@ -100,7 +100,8 @@
+@@ -116,7 +116,8 @@ dnl for xmlrpc-epi because of this.
    fi
  
    PHP_ADD_INCLUDE($XMLRPC_DIR)

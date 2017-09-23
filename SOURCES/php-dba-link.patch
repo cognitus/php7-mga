@@ -1,6 +1,7 @@
---- ext/dba/config.m4	2007-05-21 13:38:53.000000000 +0200
-+++ ext/dba/config.m4.oden	2007-06-01 10:33:10.000000000 +0200
-@@ -186,6 +186,8 @@
+diff -Naurp php-5.5.9/ext/dba/config.m4 php-5.5.9.oden/ext/dba/config.m4
+--- php-5.5.9/ext/dba/config.m4	2014-02-12 11:18:08.910822414 +0100
++++ php-5.5.9.oden/ext/dba/config.m4	2014-02-12 11:18:24.286823273 +0100
+@@ -250,6 +250,8 @@ AC_DEFUN([PHP_DBA_DB_CHECK],[
  #endif
            ],[
              THIS_LIBS=$LIB

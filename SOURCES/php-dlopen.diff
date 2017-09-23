@@ -1,6 +1,8 @@
---- php-7.0.1/Zend/zend_portability.h.omv~	2015-12-29 00:42:17.227051483 +0100
-+++ php-7.0.1/Zend/zend_portability.h	2015-12-29 00:42:37.209011427 +0100
-@@ -138,11 +138,11 @@
+Patch update by Tomás Flores
+diff -Naur php-7.1.9-orig/Zend/zend_portability.h php-7.1.9-mod/Zend/zend_portability.h
+--- php-7.1.9-orig/Zend/zend_portability.h	2017-08-30 13:13:19.000000000 -0300
++++ php-7.1.9-mod/Zend/zend_portability.h	2017-09-22 15:15:56.977860240 -0300
+@@ -146,11 +146,11 @@
  # endif
  
  # if defined(RTLD_GROUP) && defined(RTLD_WORLD) && defined(RTLD_PARENT)
@@ -15,3 +17,4 @@
  # endif
  # define DL_UNLOAD					dlclose
  # if defined(DLSYM_NEEDS_UNDERSCORE)
+ 
