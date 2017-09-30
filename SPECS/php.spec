@@ -21,7 +21,7 @@
 
 Summary:	The PHP7 scripting language
 Name:		php
-Version:	7.1.9
+Version:	7.1.10
 Release:	%mkrel 1
 Source0:	http://php.net/distributions/php-%{version}.tar.xz
 Group:		Development/PHP
@@ -69,6 +69,9 @@ Patch26:	php-5.3.9RC2-mcrypt-libs.diff
 
 Patch29:	php-5.3.x-fpm-0.6.5-shared.diff
 Patch30:	php-5.3.x-fpm-0.6.5-mdv_conf.diff
+
+#Stolen from remi - Functional changes
+Patch48: php-7.1.9-openssl-load-config.patch
 #####################################################################
 # stolen from debian
 Patch50:	php-session.save_path.diff
@@ -76,6 +79,7 @@ Patch51:	php-exif_nesting_level.diff
 #####################################################################
 # Stolen from fedora
 Patch101:	php-cxx.diff
+Patch102:	php-install.diff
 Patch105:	php-umask.diff
 # Fixes for extension modules
 Patch113:	php-libc-client.diff
@@ -90,6 +94,10 @@ Patch226:	php-no-fvisibility_hidden_fix.diff
 Patch227:	php-5.3.0RC1-enchant_lib64_fix.diff
 Patch228:	php-5.3.0RC2-xmlrpc-epi_fix.diff
 Patch229:	php-5.5.2-session.use_strict_mode.diff
+#Stolen from remi
+Patch230: php-7.0.0-includedir.patch
+Patch300: php-7.0.10-datetests.patch
+
 
 BuildRequires:	apache-devel >= 2.2
 BuildRequires:	autoconf
@@ -153,8 +161,6 @@ BuildRequires:	xmlrpc-epi-devel
 %if %{build_libmagic}
 BuildRequires:	magic-devel
 %endif
-# !Important can't be instaled with php5
-Conflicts: php <= 5.6
 Epoch: 3
 
 %description
@@ -1330,6 +1336,8 @@ fi
 %patch29 -p1 -b .shared-fpm.droplet
 %patch30 -p1 -b .fpmmdv.droplet
 
+#Stolen from remi - Functional changes
+%patch48 -p1 -b .loadconf
 #####################################################################
 # stolen from debian
 %patch50 -p1 -b .session.save_path.droplet
@@ -1338,6 +1346,7 @@ fi
 #####################################################################
 # Stolen from fedora
 %patch101 -p1 -b .cxx.droplet
+%patch102 -p1 -b .install.droplet
 %patch105 -p1 -b .umask.droplet
 %patch113 -p1 -b .libc-client-php.droplet
 %patch114 -p0 -b .no_pam_in_c-client.droplet
@@ -1352,6 +1361,9 @@ fi
 %patch228 -p0 -b .xmlrpc-epi_fix.droplet
 %patch229 -p1 -b .session.use_strict_mode.droplet
 
+#Stolen from remi - Build fixes
+%patch230 -p1 -b .includedir
+%patch300 -p1 -b .datetests
 
 cp %{SOURCE1} php-test.ini
 cp %{SOURCE4} php-fpm.service
@@ -1397,6 +1409,17 @@ find php-devel -name "*.droplet" | xargs rm -f
 
 # don't ship MS Windows source
 rm -rf php-devel/extensions/com_dotnet
+
+# https://bugs.php.net/63362 - Not needed but installed headers.
+# Drop some Windows specific headers to avoid installation,
+# before build to ensure they are really not needed.
+rm -f TSRM/tsrm_win32.h \
+      TSRM/tsrm_config.w32.h \
+      Zend/zend_config.w32.h \
+      ext/mysqlnd/config-win.h \
+      ext/standard/winver.h \
+      main/win32_internal_function_disabled.h \
+      main/win95nt.h
 
 # likewise with these:
 find php-devel -name "*.dsp" | xargs rm -f
@@ -1452,7 +1475,7 @@ export LDFLAGS="$SAFE_LDFLAGS"
 # never use "--disable-rpath", it does the opposite
 
 # Configure php7
-# FIXME switch to external gd (--with-gd=shared,%_prefix) once php bug #60108 is fixed
+# FIXME switch to external gd (--with-gd=shared,%_prefix) once php bug #60108 is fixed 
 for i in fpm cgi cli apxs; do
 ./configure \
     `[ $i = fpm ] && echo --disable-cli --enable-fpm --with-libxml-dir=%{_prefix} --with-fpm-user=apache --with-fpm-group=apache --with-fpm-systemd` \
@@ -1478,6 +1501,7 @@ for i in fpm cgi cli apxs; do
     --with-config-file-scan-dir=%{_sysconfdir}/php.d \
     --disable-debug  \
     --enable-inline-optimization \
+    --with-regex=system \
     --with-pcre-regex=%{_prefix} \
     --with-freetype-dir=%{_prefix} --with-zlib=%{_prefix} \
     --with-png-dir=%{_prefix} \
@@ -1485,6 +1509,7 @@ for i in fpm cgi cli apxs; do
     --with-zlib=shared,%{_prefix} --with-zlib-dir=%{_prefix} \
     --with-openssl=shared,%{_prefix} \
     --enable-libxml=%{_prefix} --with-libxml-dir=%{_prefix} \
+    --enable-mod_charset \
     --without-pear \
     --enable-bcmath=shared \
     --with-bz2=shared,%{_prefix} \
@@ -1500,8 +1525,7 @@ for i in fpm cgi cli apxs; do
     --enable-intl=shared --with-icu-dir=%{_prefix} \
     --enable-json=shared \
     --with-openssl-dir=%{_prefix} --enable-ftp=shared \
-    --with-gd=shared --with-jpeg-dir=%{_prefix} --with-png-dir=%{_prefix} --with-zlib-dir=%{_prefix} --with-xpm-dir=%{_prefix}/X11R6 --with-freetype-dir=%{_prefix} --enable-gd-native-ttf \
-    --enable-gd-jis-conv \
+    --with-gd=shared --with-jpeg-dir=%{_prefix} --with-png-dir=%{_prefix} --with-zlib-dir=%{_prefix} --with-xpm-dir=%{_prefix}/X11R6 --with-freetype-dir=%{_prefix} --enable-gd-native-ttf --with-t1lib=%{_prefix} \
     --with-gettext=shared,%{_prefix} \
     --with-gmp=shared,%{_prefix} \
     --enable-hash=shared,%{_prefix} \
@@ -1510,6 +1534,7 @@ for i in fpm cgi cli apxs; do
     --with-ldap=shared,%{_prefix} --with-ldap-sasl=%{_prefix} \
     --enable-mbstring=shared,%{_prefix} --enable-mbregex --with-libmbfl=%{_prefix} --with-onig=%{_prefix} \
     --with-mcrypt=shared,%{_prefix} \
+    --with-mssql=shared,%{_prefix} \
     --with-mysql-sock=/run/mysqld/mysql.sock --with-zlib-dir=%{_prefix} \
     --with-mysqli=shared,%{_bindir}/mysql_config \
     --enable-mysqlnd=shared,%{_prefix} \
@@ -1716,7 +1741,15 @@ echo "extension = wddx.so"		> %{buildroot}%{_sysconfdir}/php.d/63_wddx.ini
 echo "extension = json.so"		> %{buildroot}%{_sysconfdir}/php.d/82_json.ini
 echo "extension = zip.so"		> %{buildroot}%{_sysconfdir}/php.d/83_zip.ini
 echo "extension = phar.so"		> %{buildroot}%{_sysconfdir}/php.d/84_phar.ini
-echo "zend_extension = opcache.so"	> %{buildroot}%{_sysconfdir}/php.d/99_opcache.ini
+cat > %{buildroot}%{_sysconfdir}/php.d/99_opcache.ini <<"EOF"
+zend_extension = opcache.so
+opcache.memory_consumption=128
+opcache.interned_strings_buffer=8
+opcache.max_accelerated_files=4000
+opcache.revalidate_freq=60
+opcache.fast_shutdown=1
+opcache.enable_cli=1
+EOF
 
 install -m0755 %{SOURCE2} %{buildroot}%{_libdir}/php/maxlifetime
 install -m0644 %{SOURCE3} %{buildroot}%{_sysconfdir}/cron.d/php
@@ -1724,7 +1757,6 @@ install -m0644 php.ini-production %{buildroot}%{_sysconfdir}/php.ini
 install -m0644 php.ini-production %{buildroot}%{_sysconfdir}/php-cgi-fcgi.ini
 
 # mod_php
-
 install -d %{buildroot}%{_sysconfdir}/httpd/conf/modules.d
 install -d %{buildroot}%{_libdir}/httpd/modules
 install -m 755 mod_php/.libs/*.so %{buildroot}%{_httpd_moddir}
@@ -1862,36 +1894,54 @@ find %{buildroot}%{_usrsrc}/php-devel -type f -size 0 -exec rm -f {} \;
 export NO_INTERACTION=1
 export PHPRC="."
 export REPORT_EXIT_STATUS=2
+export MALLOC_CHECK_=2
+export SKIP_ONLINE_TESTS=1
 export TEST_PHP_DETAILED=0
 export TEST_PHP_ERROR_STYLE=EMACS
 export TEST_PHP_LOG_FORMAT=LEODC
 export PHP_INI_SCAN_DIR=/dev/null
 
-# FAILING TESTS:
-# unknown errors with ext/date/tests/oo_002.phpt probably because of php-5.2.5-systzdata.patch
-# http://bugs.php.net/bug.php?id=22414 (claimed to be fixed in 2003, but seems not)
-# unknown errors with ext/standard/tests/general_functions/phpinfo.phpt
-# unknown errors with ext/standard/tests/strings/setlocale_*
-disable_tests="ext/date/tests/oo_002.phpt \
-ext/standard/tests/file/bug22414.phpt \
-ext/standard/tests/general_functions/phpinfo.phpt \
-ext/standard/tests/strings/setlocale_basic1.phpt \
-ext/standard/tests/strings/setlocale_basic2.phpt \
-ext/standard/tests/strings/setlocale_basic3.phpt \
-ext/standard/tests/strings/setlocale_variation1.phpt \
-ext/standard/tests/strings/setlocale_variation3.phpt \
-ext/standard/tests/strings/setlocale_variation4.phpt \
-ext/standard/tests/strings/setlocale_variation5.phpt"
 
 [[ -n "$disable_tests" ]] && \
 for f in $disable_tests; do
   [[ -f "$f" ]] && mv $f $f.disabled
 done
 
-TEST_PHP_EXECUTABLE=sapi/cli/php sapi/cli/php -c ./php-test.ini run-tests.php
+cat >php-test.ini <<EOF
+[PHP]
+extension_dir="`pwd`/modules"
+EOF
+for i in modules/*.so; do
+	B="`basename $i`"
+	case "$B" in
+	opcache.so)
+		echo zend_extension=$B >>php-test.ini
+		;;
+	wddx.so|xsl.so)
+		# Unresolved symbols, need fixing
+		;;
+#	ctype.so|dom.so|openssl.so|zlib.so|ftp.so|gettext.so|posix.so|session.so|hash.so|sysvsem.so|sysvshm.so|tokenizer.so|xml.so|xmlreader.so|xmlwriter.so|filter.so|json.so)
+		# Apparently loaded by default without a need to mention them in the ini file
+#		;;
+	*)
+		echo extension=$B >>php-test.ini
+		;;
+	esac
+done
+cat >>php-test.ini <<EOF
+open_basedir="`pwd`"
+safe_mode=0
+output_buffering=0
+output_handler=0
+magic_quotes_runtime=0
+memory_limit=1G
+
+[Session]
+session.save_path="`pwd`"
+EOF
+
+TEST_PHP_EXECUTABLE=sapi/cli/php sapi/cli/php -n -c ./php-test.ini run-tests.php
 %endif
-
-
 
 %post fpm
 %_tmpfilescreate php-fpm
@@ -2228,6 +2278,9 @@ systemctl reload-or-try-restart httpd.service || :
 %{_mandir}/man1/phpdbg.1*
 
 %changelog
+* Sat Sep 30 2017 Tomás Flores <cognitus> - 7.1.10-1.mga6
++ Update to 7.1.10
+
 * Fri Sep 22 2017 Tomás Flores <cognitus> 1.1.9-2.mga6
 + Remove patches from Openmandriva 
 + Add and update patches from Mageia
