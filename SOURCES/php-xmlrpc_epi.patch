@@ -1,5 +1,6 @@
---- php-7.0.1/ext/xmlrpc/xmlrpc-epi-php.c.xmlrpc_epi_header	2015-12-29 00:12:51.764748580 +0100
-+++ php-7.0.1/ext/xmlrpc/xmlrpc-epi-php.c	2015-12-29 00:15:09.654193700 +0100
+diff -Naurp php-5.5.9/ext/xmlrpc/xmlrpc-epi-php.c php-5.5.9.oden/ext/xmlrpc/xmlrpc-epi-php.c
+--- php-5.5.9/ext/xmlrpc/xmlrpc-epi-php.c	2014-02-05 11:00:36.000000000 +0100
++++ php-5.5.9.oden/ext/xmlrpc/xmlrpc-epi-php.c	2014-02-12 11:13:04.873805413 +0100
 @@ -71,7 +71,7 @@
  #include "ext/date/php_date.h"
  #include "php_ini.h"

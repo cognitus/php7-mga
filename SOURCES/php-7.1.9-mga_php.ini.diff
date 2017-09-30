@@ -1,0 +1,384 @@
+diff -Naur php-7.1.9-orig/php.ini-development php-7.1.9-mod/php.ini-development
+--- php-7.1.9-orig/php.ini-development	2017-08-30 13:13:18.000000000 -0300
++++ php-7.1.9-mod/php.ini-development	2017-09-22 13:51:54.996407229 -0300
+@@ -170,7 +170,7 @@
+ ;user_ini.filename = ".user.ini"
+ 
+ ; To disable this feature set this option to empty value
+-;user_ini.filename =
++user_ini.filename =
+ 
+ ; TTL for user-defined php.ini files (time-to-live) in seconds. Default is 300 seconds (5 minutes)
+ ;user_ini.cache_ttl = 300
+@@ -194,7 +194,7 @@
+ ; Development Value: Off
+ ; Production Value: Off
+ ; http://php.net/short-open-tag
+-short_open_tag = Off
++short_open_tag = On
+ 
+ ; The number of significant digits displayed in floating point numbers.
+ ; http://php.net/precision
+@@ -313,6 +313,9 @@
+ ; http://php.net/disable-functions
+ disable_functions =
+ 
++; this is an example
++;disable_functions = php_uname, getmyuid, getmypid, passthru, leak, listen, diskfreespace, tmpfile, link, ignore_user_abord, shell_exec, dl, set_time_limit, exec, system, highlight_file, source, show_source, fpaththru, virtual, posix_ctermid, posix _getcwd, posix_getegid, posix_geteuid, posix_getgid, posix_getgrgid, posix_getgrnam, posix_getgroups, posix_getlogin, posix_g etpgid, posix_getpgrp, posix_getpid, posix, _getppid, posix_getpwnam, posix_getpwuid, posix_getrlimit, posix_getsid, posix_ge tuid, posix_isatty, posix_kill, posix_mkfifo, posix_setegid, posix_seteuid, posix_setgid, posix_setpgid, posix_setsid, posix_ setuid, posix_times, posix_ttyname, posix_uname, proc_open, proc_close, proc_get_status, proc_nice, proc_terminate, phpinfo
++
+ ; This directive allows you to disable certain classes for security reasons.
+ ; It receives a comma-delimited list of class names.
+ ; http://php.net/disable-classes
+@@ -709,14 +712,9 @@
+ ; Paths and Directories ;
+ ;;;;;;;;;;;;;;;;;;;;;;;;;
+ 
+-; UNIX: "/path1:/path2"
+-;include_path = ".:/php/includes"
+-;
+-; Windows: "\path1;\path2"
+-;include_path = ".;c:\php\includes"
+-;
+ ; PHP's default setting for include_path is ".;/path/to/php/pear"
+ ; http://php.net/include-path
++include_path = ".:/usr/lib/php/:/usr/share/pear/:/usr/share/php/"
+ 
+ ; The root of the PHP pages, used only if nonempty.
+ ; if PHP was not compiled with FORCE_REDIRECT, you SHOULD set doc_root
+@@ -733,9 +731,7 @@
+ 
+ ; Directory in which the loadable extensions (modules) reside.
+ ; http://php.net/extension-dir
+-; extension_dir = "./"
+-; On windows:
+-; extension_dir = "ext"
++extension_dir = "/usr/lib/php/extensions"
+ 
+ ; Directory where the temporary files should be placed.
+ ; Defaults to the system default (see sys_get_temp_dir)
+@@ -745,7 +741,7 @@
+ ; properly in multithreaded servers, such as IIS or Zeus, and is automatically
+ ; disabled on them.
+ ; http://php.net/enable-dl
+-enable_dl = Off
++enable_dl = On
+ 
+ ; cgi.force_redirect is necessary to provide security running PHP as a CGI under
+ ; most web servers.  Left undefined, PHP turns this on by default.  You can
+@@ -817,11 +813,11 @@
+ ; Temporary directory for HTTP uploaded files (will use system default if not
+ ; specified).
+ ; http://php.net/upload-tmp-dir
+-;upload_tmp_dir =
++;upload_tmp_dir = /var/tmp
+ 
+ ; Maximum allowed size for uploaded files.
+ ; http://php.net/upload-max-filesize
+-upload_max_filesize = 2M
++upload_max_filesize = 16M
+ 
+ ; Maximum number of files that can be uploaded via a single request
+ max_file_uploads = 20
+@@ -868,62 +864,10 @@
+ ;
+ ;   extension=modulename.extension
+ ;
+-; For example, on Windows:
+-;
+-;   extension=msql.dll
+-;
+-; ... or under UNIX:
+-;
+-;   extension=msql.so
+-;
+-; ... or with a path:
+-;
+-;   extension=/path/to/extension/msql.so
+-;
+-; If you only provide the name of the extension, PHP will look for it in its
+-; default extension directory.
+-;
+-; Windows Extensions
+-; Note that ODBC support is built in, so no dll is needed for it.
+-; Note that many DLL files are located in the extensions/ (PHP 4) ext/ (PHP 5+)
+-; extension folders as well as the separate PECL DLL download (PHP 5+).
+-; Be sure to appropriately set the extension_dir directive.
+-;
+-;extension=php_bz2.dll
+-;extension=php_curl.dll
+-;extension=php_fileinfo.dll
+-;extension=php_ftp.dll
+-;extension=php_gd2.dll
+-;extension=php_gettext.dll
+-;extension=php_gmp.dll
+-;extension=php_intl.dll
+-;extension=php_imap.dll
+-;extension=php_interbase.dll
+-;extension=php_ldap.dll
+-;extension=php_mbstring.dll
+-;extension=php_exif.dll      ; Must be after mbstring as it depends on it
+-;extension=php_mysqli.dll
+-;extension=php_oci8_12c.dll  ; Use with Oracle Database 12c Instant Client
+-;extension=php_openssl.dll
+-;extension=php_pdo_firebird.dll
+-;extension=php_pdo_mysql.dll
+-;extension=php_pdo_oci.dll
+-;extension=php_pdo_odbc.dll
+-;extension=php_pdo_pgsql.dll
+-;extension=php_pdo_sqlite.dll
+-;extension=php_pgsql.dll
+-;extension=php_shmop.dll
+-
+-; The MIBS data available in the PHP distribution must be installed.
+-; See http://www.php.net/manual/en/snmp.installation.php
+-;extension=php_snmp.dll
+-
+-;extension=php_soap.dll
+-;extension=php_sockets.dll
+-;extension=php_sqlite3.dll
+-;extension=php_tidy.dll
+-;extension=php_xmlrpc.dll
+-;extension=php_xsl.dll
++; In Mageia, we don't add the extensions in php.ini anymore, we put
++; them in /etc/php.d/<number>_<name>.ini, for example 10_recode.ini.
++; This is so that the RPMS can register themselves without having to
++; modify the php.ini file.
+ 
+ ;;;;;;;;;;;;;;;;;;;
+ ; Module Settings ;
+@@ -1352,7 +1296,7 @@
+ ; where MODE is the octal representation of the mode. Note that this
+ ; does not overwrite the process's umask.
+ ; http://php.net/session.save-path
+-;session.save_path = "/tmp"
++session.save_path = "/var/lib/php"
+ 
+ ; Whether to use strict session mode.
+ ; Strict session mode does not accept uninitialized session ID and regenerate
+@@ -1414,7 +1358,12 @@
+ ; Development Value: 1
+ ; Production Value: 1
+ ; http://php.net/session.gc-probability
+-session.gc_probability = 1
++
++; This is disabled in the Mageia Linux packages, due to the strict permissions
++; on /var/lib/php. Instead of setting this here, see the cronjob at
++; /etc/cron.d/php, which uses the session.gc_maxlifetime settings from the 
++; /etc/php.d/*_session.ini file.
++session.gc_probability = 0
+ 
+ ; Defines the probability that the 'garbage collection' process is started on every
+ ; session initialization. The probability is calculated by using the following equation:
+@@ -1428,7 +1377,7 @@
+ ; Development Value: 1000
+ ; Production Value: 1000
+ ; http://php.net/session.gc-divisor
+-session.gc_divisor = 1000
++session.gc_divisor = 100
+ 
+ ; After this number of seconds, stored data will be seen as 'garbage' and
+ ; cleaned up by the garbage collection process.
+@@ -1745,7 +1694,7 @@
+ 
+ ; Sets the directory name where SOAP extension will put cache files.
+ ; http://php.net/soap.wsdl-cache-dir
+-soap.wsdl_cache_dir="/tmp"
++soap.wsdl_cache_dir="/var/tmp"
+ 
+ ; (time to live) Sets the number of second while cached file will be used
+ ; instead of original one.
+diff -Naur php-7.1.9-orig/php.ini-production php-7.1.9-mod/php.ini-production
+--- php-7.1.9-orig/php.ini-production	2017-08-30 13:13:18.000000000 -0300
++++ php-7.1.9-mod/php.ini-production	2017-09-22 13:56:58.465391377 -0300
+@@ -170,7 +170,7 @@
+ ;user_ini.filename = ".user.ini"
+ 
+ ; To disable this feature set this option to empty value
+-;user_ini.filename =
++user_ini.filename =
+ 
+ ; TTL for user-defined php.ini files (time-to-live) in seconds. Default is 300 seconds (5 minutes)
+ ;user_ini.cache_ttl = 300
+@@ -194,7 +194,7 @@
+ ; Development Value: Off
+ ; Production Value: Off
+ ; http://php.net/short-open-tag
+-short_open_tag = Off
++short_open_tag = On
+ 
+ ; The number of significant digits displayed in floating point numbers.
+ ; http://php.net/precision
+@@ -313,6 +313,9 @@
+ ; http://php.net/disable-functions
+ disable_functions =
+ 
++; this is an example
++;disable_functions = php_uname, getmyuid, getmypid, passthru, leak, listen, diskfreespace, tmpfile, link, ignore_user_abord, shell_exec, dl, set_time_limit, exec, system, highlight_file, source, show_source, fpaththru, virtual, posix_ctermid, posix _getcwd, posix_getegid, posix_geteuid, posix_getgid, posix_getgrgid, posix_getgrnam, posix_getgroups, posix_getlogin, posix_g etpgid, posix_getpgrp, posix_getpid, posix, _getppid, posix_getpwnam, posix_getpwuid, posix_getrlimit, posix_getsid, posix_ge tuid, posix_isatty, posix_kill, posix_mkfifo, posix_setegid, posix_seteuid, posix_setgid, posix_setpgid, posix_setsid, posix_ setuid, posix_times, posix_ttyname, posix_uname, proc_open, proc_close, proc_get_status, proc_nice, proc_terminate, phpinfo
++
+ ; This directive allows you to disable certain classes for security reasons.
+ ; It receives a comma-delimited list of class names.
+ ; http://php.net/disable-classes
+@@ -709,14 +712,9 @@
+ ; Paths and Directories ;
+ ;;;;;;;;;;;;;;;;;;;;;;;;;
+ 
+-; UNIX: "/path1:/path2"
+-;include_path = ".:/php/includes"
+-;
+-; Windows: "\path1;\path2"
+-;include_path = ".;c:\php\includes"
+-;
+ ; PHP's default setting for include_path is ".;/path/to/php/pear"
+ ; http://php.net/include-path
++include_path = ".:/usr/lib/php/:/usr/share/pear/:/usr/share/php/"
+ 
+ ; The root of the PHP pages, used only if nonempty.
+ ; if PHP was not compiled with FORCE_REDIRECT, you SHOULD set doc_root
+@@ -733,9 +731,7 @@
+ 
+ ; Directory in which the loadable extensions (modules) reside.
+ ; http://php.net/extension-dir
+-; extension_dir = "./"
+-; On windows:
+-; extension_dir = "ext"
++extension_dir = "/usr/lib/php/extensions"
+ 
+ ; Directory where the temporary files should be placed.
+ ; Defaults to the system default (see sys_get_temp_dir)
+@@ -745,7 +741,7 @@
+ ; properly in multithreaded servers, such as IIS or Zeus, and is automatically
+ ; disabled on them.
+ ; http://php.net/enable-dl
+-enable_dl = Off
++enable_dl = On
+ 
+ ; cgi.force_redirect is necessary to provide security running PHP as a CGI under
+ ; most web servers.  Left undefined, PHP turns this on by default.  You can
+@@ -817,11 +813,11 @@
+ ; Temporary directory for HTTP uploaded files (will use system default if not
+ ; specified).
+ ; http://php.net/upload-tmp-dir
+-;upload_tmp_dir =
++upload_tmp_dir = /var/tmp
+ 
+ ; Maximum allowed size for uploaded files.
+ ; http://php.net/upload-max-filesize
+-upload_max_filesize = 2M
++upload_max_filesize = 16M
+ 
+ ; Maximum number of files that can be uploaded via a single request
+ max_file_uploads = 20
+@@ -863,67 +859,10 @@
+ ; Dynamic Extensions ;
+ ;;;;;;;;;;;;;;;;;;;;;;
+ 
+-; If you wish to have an extension loaded automatically, use the following
+-; syntax:
+-;
+-;   extension=modulename.extension
+-;
+-; For example, on Windows:
+-;
+-;   extension=msql.dll
+-;
+-; ... or under UNIX:
+-;
+-;   extension=msql.so
+-;
+-; ... or with a path:
+-;
+-;   extension=/path/to/extension/msql.so
+-;
+-; If you only provide the name of the extension, PHP will look for it in its
+-; default extension directory.
+-;
+-; Windows Extensions
+-; Note that ODBC support is built in, so no dll is needed for it.
+-; Note that many DLL files are located in the extensions/ (PHP 4) ext/ (PHP 5+)
+-; extension folders as well as the separate PECL DLL download (PHP 5+).
+-; Be sure to appropriately set the extension_dir directive.
+-;
+-;extension=php_bz2.dll
+-;extension=php_curl.dll
+-;extension=php_fileinfo.dll
+-;extension=php_ftp.dll
+-;extension=php_gd2.dll
+-;extension=php_gettext.dll
+-;extension=php_gmp.dll
+-;extension=php_intl.dll
+-;extension=php_imap.dll
+-;extension=php_interbase.dll
+-;extension=php_ldap.dll
+-;extension=php_mbstring.dll
+-;extension=php_exif.dll      ; Must be after mbstring as it depends on it
+-;extension=php_mysqli.dll
+-;extension=php_oci8_12c.dll  ; Use with Oracle Database 12c Instant Client
+-;extension=php_openssl.dll
+-;extension=php_pdo_firebird.dll
+-;extension=php_pdo_mysql.dll
+-;extension=php_pdo_oci.dll
+-;extension=php_pdo_odbc.dll
+-;extension=php_pdo_pgsql.dll
+-;extension=php_pdo_sqlite.dll
+-;extension=php_pgsql.dll
+-;extension=php_shmop.dll
+-
+-; The MIBS data available in the PHP distribution must be installed.
+-; See http://www.php.net/manual/en/snmp.installation.php
+-;extension=php_snmp.dll
+-
+-;extension=php_soap.dll
+-;extension=php_sockets.dll
+-;extension=php_sqlite3.dll
+-;extension=php_tidy.dll
+-;extension=php_xmlrpc.dll
+-;extension=php_xsl.dll
++; In Mageia, we don't add the extensions in php.ini anymore, we put
++; them in /etc/php.d/<number>_<name>.ini, for example 10_recode.ini.
++; This is so that the RPMS can register themselves without having to
++; modify the php.ini file.
+ 
+ ;;;;;;;;;;;;;;;;;;;
+ ; Module Settings ;
+@@ -1352,7 +1291,7 @@
+ ; where MODE is the octal representation of the mode. Note that this
+ ; does not overwrite the process's umask.
+ ; http://php.net/session.save-path
+-;session.save_path = "/tmp"
++session.save_path = "/var/lib/php"
+ 
+ ; Whether to use strict session mode.
+ ; Strict session mode does not accept uninitialized session ID and regenerate
+@@ -1414,7 +1353,12 @@
+ ; Development Value: 1
+ ; Production Value: 1
+ ; http://php.net/session.gc-probability
+-session.gc_probability = 1
++
++; This is disabled in the Mageia Linux packages, due to the strict permissions
++; on /var/lib/php. Instead of setting this here, see the cronjob at
++; /etc/cron.d/php, which uses the session.gc_maxlifetime settings from the 
++; /etc/php.d/*_session.ini file.
++session.gc_probability = 0
+ 
+ ; Defines the probability that the 'garbage collection' process is started on every
+ ; session initialization. The probability is calculated by using the following equation:
+@@ -1428,7 +1372,7 @@
+ ; Development Value: 1000
+ ; Production Value: 1000
+ ; http://php.net/session.gc-divisor
+-session.gc_divisor = 1000
++session.gc_divisor = 100
+ 
+ ; After this number of seconds, stored data will be seen as 'garbage' and
+ ; cleaned up by the garbage collection process.
+@@ -1745,7 +1689,7 @@
+ 
+ ; Sets the directory name where SOAP extension will put cache files.
+ ; http://php.net/soap.wsdl-cache-dir
+-soap.wsdl_cache_dir="/tmp"
++soap.wsdl_cache_dir="/var/tmp"
+ 
+ ; (time to live) Sets the number of second while cached file will be used
+ ; instead of original one.
+

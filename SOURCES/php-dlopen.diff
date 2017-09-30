@@ -1,6 +1,20 @@
---- php-7.0.1/Zend/zend_portability.h.omv~	2015-12-29 00:42:17.227051483 +0100
-+++ php-7.0.1/Zend/zend_portability.h	2015-12-29 00:42:37.209011427 +0100
-@@ -138,11 +138,11 @@
+Patch update by Tomás Flores
+diff -up php-7.1.9-orig/sapi/litespeed/lsapilib.c.dlopen php-7.1.9-orig/sapi/litespeed/lsapilib.c
+--- php-7.1.9-orig/sapi/litespeed/lsapilib.c.dlopen	2017-02-28 10:12:34.000000000 +0100
++++ php-7.1.9-orig/sapi/litespeed/lsapilib.c	2017-02-28 10:23:11.384521740 +0100
+@@ -616,7 +616,7 @@ static int (*fp_lve_leave)(struct liblve
+ static int (*fp_lve_jail)( struct passwd *, char *) = NULL;
+ static int lsapi_load_lve_lib()
+ {
+-    s_liblve = dlopen("liblve.so.0", RTLD_LAZY);
++    s_liblve = dlopen("liblve.so.0", RTLD_NOW);
+     if (s_liblve)
+     {
+         fp_lve_is_available = dlsym(s_liblve, "lve_is_available");
+diff -Naur php-7.1.9-orig/Zend/zend_portability.h php-7.1.9-mod/Zend/zend_portability.h
+--- php-7.1.9-orig/Zend/zend_portability.h	2017-08-30 13:13:19.000000000 -0300
++++ php-7.1.9-mod/Zend/zend_portability.h	2017-09-22 15:15:56.977860240 -0300
+@@ -146,11 +146,11 @@
  # endif
  
  # if defined(RTLD_GROUP) && defined(RTLD_WORLD) && defined(RTLD_PARENT)
@@ -15,3 +29,5 @@
  # endif
  # define DL_UNLOAD					dlclose
  # if defined(DLSYM_NEEDS_UNDERSCORE)
+ 
+ 

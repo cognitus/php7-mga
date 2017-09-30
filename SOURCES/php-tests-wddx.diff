@@ -1,7 +1,7 @@
-diff -Naur php-5.2.3/ext/wddx/tests/001.phpt php-5.2.3.oden/ext/wddx/tests/001.phpt
---- php-5.2.3/ext/wddx/tests/001.phpt	2007-05-18 13:29:55.000000000 +0200
-+++ php-5.2.3.oden/ext/wddx/tests/001.phpt	2007-06-20 13:19:55.000000000 +0200
-@@ -22,7 +22,7 @@
+diff -Naurp php-5.5.9/ext/wddx/tests/001.phpt php-5.5.9.oden/ext/wddx/tests/001.phpt
+--- php-5.5.9/ext/wddx/tests/001.phpt	2014-02-05 11:00:36.000000000 +0100
++++ php-5.5.9.oden/ext/wddx/tests/001.phpt	2014-02-12 11:27:39.079854295 +0100
+@@ -23,7 +23,7 @@ array(11) {
    ["aDateTime2"]=>
    int(329632332)
    ["aDateTime3"]=>
@@ -10,9 +10,9 @@ diff -Naur php-5.2.3/ext/wddx/tests/001.phpt php-5.2.3.oden/ext/wddx/tests/001.p
    ["aBoolean"]=>
    bool(true)
    ["anArray"]=>
-diff -Naur php-5.2.3/ext/wddx/tests/wddx.xml php-5.2.3.oden/ext/wddx/tests/wddx.xml
---- php-5.2.3/ext/wddx/tests/wddx.xml	2005-03-12 02:52:48.000000000 +0100
-+++ php-5.2.3.oden/ext/wddx/tests/wddx.xml	2007-06-20 13:19:55.000000000 +0200
+diff -Naurp php-5.5.9/ext/wddx/tests/wddx.xml php-5.5.9.oden/ext/wddx/tests/wddx.xml
+--- php-5.5.9/ext/wddx/tests/wddx.xml	2014-02-05 11:00:36.000000000 +0100
++++ php-5.5.9.oden/ext/wddx/tests/wddx.xml	2014-02-12 11:27:39.079854295 +0100
 @@ -20,7 +20,7 @@
                           <dateTime>1980-06-12T04:32:12+00</dateTime>
                       </var>

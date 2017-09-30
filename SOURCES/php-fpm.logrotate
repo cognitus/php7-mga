@@ -4,8 +4,9 @@
     missingok
     create 640 apache apache
     notifempty
-    nocompress
+    sharedscripts
+    delaycompress
     postrotate
-	/bin/kill -SIGUSR1 `cat /run/php-fpm/php-fpm.pid 2>/dev/null` > /dev/null 2>&1 || :
+	/bin/kill -SIGUSR1 `cat /run/php-fpm/php-fpm.pid 2>/dev/null` 2>/dev/null || true
     endscript
 }

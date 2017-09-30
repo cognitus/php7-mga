@@ -1,6 +1,13 @@
---- php-7.0.1/sapi/apache2handler/php_functions.c.apache2-filters.droplet	2015-12-16 11:41:55.000000000 +0100
-+++ php-7.0.1/sapi/apache2handler/php_functions.c	2015-12-29 00:12:07.202603653 +0100
-@@ -216,6 +216,65 @@ PHP_FUNCTION(apache_response_headers)
+ Description: Enables mod_php to manually add apache output filters
+ Author: Paul Querna, update by Tomás Flores
+
+ URL: http://www.outoforder.cc/projects/apache/mod_transform/patches/php5-apache2-filters.patch
+      http://www.outoforder.cc/presentations/apachecon2004/mod_transform/tu19_mod_transform_slides.pdf
+ 
+diff -Naur php-7.1.9-orig/sapi/apache2handler/php_functions.c php-7.1.9-mod/sapi/apache2handler/php_functions.c
+--- php-7.1.9-orig/sapi/apache2handler/php_functions.c	2017-08-30 13:13:18.000000000 -0300
++++ php-7.1.9-mod/sapi/apache2handler/php_functions.c	2017-09-22 14:46:24.624757791 -0300
+@@ -216,6 +216,66 @@
  }
  /* }}} */
  
@@ -63,15 +70,16 @@
 +}
 +/* }}} */
 +
++
  /* {{{ proto string apache_note(string note_name [, string note_value])
     Get and set Apache request notes */
  PHP_FUNCTION(apache_note)
-@@ -520,6 +579,8 @@ ZEND_END_ARG_INFO()
+@@ -520,6 +580,8 @@
  static const zend_function_entry apache_functions[] = {
  	PHP_FE(apache_lookup_uri, 		arginfo_apache2handler_lookup_uri)
  	PHP_FE(virtual, 				arginfo_apache2handler_virtual)
-+    PHP_FE(apache_get_output_filters, NULL)
-+    PHP_FE(apache_add_output_filter, NULL)
++   PHP_FE(apache_get_output_filters, NULL)
++ 	PHP_FE(apache_add_output_filter, NULL)
  	PHP_FE(apache_request_headers, 	arginfo_apache2handler_getallheaders)
  	PHP_FE(apache_response_headers, arginfo_apache2handler_response_headers)
  	PHP_FE(apache_setenv, 		arginfo_apache2handler_setenv)
