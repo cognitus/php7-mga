@@ -92,7 +92,6 @@ Patch121:	php-bug43221.diff
 Patch123:	php-bug43589.diff
 Patch226:	php-no-fvisibility_hidden_fix.diff
 Patch227:	php-5.3.0RC1-enchant_lib64_fix.diff
-Patch228:	php-5.3.0RC2-xmlrpc-epi_fix.diff
 Patch229:	php-5.5.2-session.use_strict_mode.diff
 #Stolen from remi
 Patch230: php-7.0.0-includedir.patch
@@ -1322,8 +1321,8 @@ fi
 %patch8 -p1 -b .xmlrpc_epi_header
 %patch9 -p1 -b .xmlrpc_no_rpath.droplet
 %patch11 -p1 -b .libdb.droplet
-%patch12 -p1 -b .mysqlnd-unix-sock-addr
-%patch13 -p1 -b .clangwarn~
+%patch12 -p1 -b .mysqlnd-unix-sock-addr.droplet
+%patch13 -p1 -b .clangwarn~.droplet
 
 #####################################################################
 # Stolen from PLD
@@ -1358,7 +1357,6 @@ fi
 %patch123 -p1 -b .bug43589.droplet
 %patch226 -p1 -b .no-fvisibility_hidden.droplet
 %patch227 -p0 -b .enchant_lib64_fix.droplet
-%patch228 -p0 -b .xmlrpc-epi_fix.droplet
 %patch229 -p1 -b .session.use_strict_mode.droplet
 
 #Stolen from remi - Build fixes
