@@ -1337,7 +1337,7 @@ fi
 %patch30 -p1 -b .fpmmdv.droplet
 
 #Stolen from remi - Functional changes
-%patch48 -p1 -b .loadconf
+%patch48 -p1 -b .loadconf.droplet
 #####################################################################
 # stolen from debian
 %patch50 -p1 -b .session.save_path.droplet
@@ -1362,8 +1362,8 @@ fi
 %patch229 -p1 -b .session.use_strict_mode.droplet
 
 #Stolen from remi - Build fixes
-%patch230 -p1 -b .includedir
-%patch300 -p1 -b .datetests
+%patch230 -p1 -b .includedir.droplet
+%patch300 -p1 -b .datetests.droplet
 
 cp %{SOURCE1} php-test.ini
 cp %{SOURCE4} php-fpm.service
