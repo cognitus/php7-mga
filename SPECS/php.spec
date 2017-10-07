@@ -1299,7 +1299,10 @@ phpdbg aims to be a lightweight, powerful, easy to use debugging platform for
 PHP5.4+
 
 %prep
-
+export LC_ALL=en_US.utf-8
+export LANG=en_US.utf-8
+export LANGUAGE=en_US.utf-8
+export LANGUAGES=en_US.utf-8
 %setup -q
 
 %if %{build_libmagic}
@@ -2286,15 +2289,19 @@ systemctl reload-or-try-restart httpd.service || :
 %{_mandir}/man1/phpdbg.1*
 
 %changelog
+* Sat Oct 07 2017 Tomás Flores <cognitus> - 7.1.10-2.mga6
+- fix typo and remove redundant diff 
+- 7.1.10
+
 * Sat Sep 30 2017 Tomás Flores <cognitus> - 7.1.10-1.mga6
 + Update to 7.1.10
 
-* Fri Sep 22 2017 Tomás Flores <cognitus> 1.1.9-2.mga6
+* Fri Sep 22 2017 Tomás Flores <cognitus> 7.1.9-2.mga6
 + Remove patches from Openmandriva 
 + Add and update patches from Mageia
 - 7.1.9
 
-* Sat Sep 09 2017 Tomás Flores <cognitus> 1.1.9-1.mga6
+* Sat Sep 09 2017 Tomás Flores <cognitus> 7.1.9-1.mga6
 + Ported from Openmandriva
 + Update version
 - 7.1.9
