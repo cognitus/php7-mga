@@ -8,10 +8,21 @@ After install, the package [php-timezonedb](https://madb.mageia.org/package/show
 
 ## QuickUsage
 
-### Created rpmbuild structure in /~
+
+### Create rpmbuild structure in /~
 
 ```
  $ mkdir -p ~/rpmbuild/{BUILD,RPMS/i586,RPMS/x86_64,RPMS/noarch,SOURCES,SRPMS,SPECS,tmp}
+```
+create file [.rpmmacros](https://wiki.mageia.org/en/Packagers_RPM_tutorial#.rpmmacros_file_creation)
+
+
+### Put files in folders
+
+Download and replace in
+
+```
+~/rpmbuild/
 ```
 
 ### Install dependencies
@@ -22,19 +33,18 @@ For build rpm
  # urpmi rpm-build rpmlint task-c++-devel task-c-devel
 ```
 
-For compile php7 you needs all dependencies listed in .spec (BuildRequires)
+For compile php7 you needs all dependencies listed in .spec (BuildRequires) 
 
-
-
-### Put files in folders
-
-Download and replace folders in
+you can install all them with: (dnf rulez!)
 
 ```
-~/rpmbuild/
+ # dnf builddep php.spec
+
 ```
 
 ### Build
+
+Remember use with your own user
 
 ```
 cd  ~/rpmbuild/SPECS

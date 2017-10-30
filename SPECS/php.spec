@@ -126,6 +126,8 @@ BuildRequires:	pkgconfig(x11)
 BuildRequires:	pkgconfig(xpm)
 
 BuildRequires:	firebird-devel
+BuildRequires:	libfbclient-devel
+BuildRequires:  systemd-devel
 
 BuildRequires:	aspell-devel
 BuildRequires:	bzip2-devel
