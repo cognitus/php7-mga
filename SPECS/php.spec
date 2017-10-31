@@ -40,7 +40,6 @@ Patch1:		php-shared.diff
 #update init to 7.1.9
 Patch2:		php-7.1.9-mga_php.ini.diff
 Patch3:		php-libtool.diff
-Patch4:		php-phpize.diff
 Patch5:		php-phpbuilddir.diff
 # http://www.outoforder.cc/projects/apache/mod_transform/
 # http://www.outoforder.cc/projects/apache/mod_transform/patches/php5-apache2-filters.patch
@@ -87,6 +86,7 @@ Patch113:	php-libc-client.diff
 Patch114:	php-no_pam_in_c-client.diff
 # Functional changes
 Patch115:	php-dlopen.diff
+Patch116:   php-7.0.0-disable-zts.patch
 # Fix bugs
 Patch120:	php-tests-wddx.diff
 Patch121:	php-bug43221.diff
@@ -97,6 +97,7 @@ Patch229:	php-5.5.2-session.use_strict_mode.diff
 #Stolen from remi
 Patch230: php-7.0.0-includedir.patch
 Patch300: php-7.0.10-datetests.patch
+
 
 
 BuildRequires:	apache-devel >= 2.2
@@ -127,7 +128,6 @@ BuildRequires:	pkgconfig(x11)
 BuildRequires:	pkgconfig(xpm)
 
 BuildRequires:	firebird-devel
-BuildRequires:	libfbclient-devel
 BuildRequires:  systemd-devel
 BuildRequires:  dos2unix
 
@@ -1322,7 +1322,6 @@ fi
 %patch1 -p1 -b .shared.droplet
 %patch2 -p1 -b .mga_php.ini.droplet
 %patch3 -p1 -b .libtool.droplet
-%patch4 -p1 -b .phpize.droplet
 %patch5 -p1 -b .phpbuilddir.droplet
 %patch6 -p1 -b .apache2-filters.droplet
 %patch7 -p1 -b .no_libedit.droplet
@@ -1357,7 +1356,10 @@ fi
 %patch105 -p1 -b .umask.droplet
 %patch113 -p1 -b .libc-client-php.droplet
 %patch114 -p0 -b .no_pam_in_c-client.droplet
+
+# Functional changes
 %patch115 -p1 -b .dlopen.droplet
+%patch116 -p1 -b  disable-zts.droplet
 
 # upstream fixes
 %patch120 -p1 -b .tests-wddx.droplet
@@ -1439,6 +1441,14 @@ rm -rf ext/xmlrpc/libxmlrpc
 
 %build
 %serverbuild
+
+# aclocal workaround - to be improved
+cat `aclocal --print-ac-dir`/{libtool,ltoptions,ltsugar,ltversion,lt~obsolete}.m4 >>aclocal.m4
+
+# Force use of system libtool:
+libtoolize --force --copy
+cat `aclocal --print-ac-dir`/{libtool,ltoptions,ltsugar,ltversion,lt~obsolete}.m4 >build/libtool.m4
+
 
 # it does not work with -fPIE and someone added that to the serverbuild macro...
 CFLAGS=`echo $CFLAGS|sed -e 's|-fPIE||g'`
