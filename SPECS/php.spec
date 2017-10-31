@@ -21,7 +21,7 @@
 
 Summary:	The PHP7 scripting language
 Name:		php
-Version:	7.1.10
+Version:	7.1.11
 Release:	%mkrel 1
 Source0:	http://php.net/distributions/php-%{version}.tar.xz
 Group:		Development/PHP
@@ -86,6 +86,7 @@ Patch113:	php-libc-client.diff
 Patch114:	php-no_pam_in_c-client.diff
 # Functional changes
 Patch115:	php-dlopen.diff
+## from https://github.com/CpanelInc/scl-php71
 Patch116:   php-7.0.0-disable-zts.patch
 # Fix bugs
 Patch120:	php-tests-wddx.diff
@@ -2296,6 +2297,10 @@ systemctl reload-or-try-restart httpd.service || :
 %{_mandir}/man1/phpdbg.1*
 
 %changelog
+* Thu Oct 31 2017 Tomás Flores <cognitus> - 7.1.11-1.mga6
+- Disable zts
+- 7.1.11
+
 * Sat Oct 07 2017 Tomás Flores <cognitus> - 7.1.10-2.mga6
 - fix typo and remove redundant diff 
 - 7.1.10

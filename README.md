@@ -1,9 +1,9 @@
 # php7.1-mga 
 
-RPM Spec, patch and diff files for php 7.1.10 (28 Sep 2017) in Mageia 6
+RPM Spec, patch and diff files for php 7.1.11 (27 Oct 2017) in Mageia 6
 
 
-After install, the package [php-timezonedb](https://madb.mageia.org/package/show/name/php-timezonedb/application/0/arch/x86_64) needs rebuild with this version and probably [php-suhosin](https://madb.mageia.org/package/show/application/0/arch/x86_64/name/php-suhosin)
+After install, the package [php-timezonedb](https://madb.mageia.org/package/show/name/php-timezonedb/application/0/arch/x86_64) needs rebuild with this version and probably [php-suhosin](https://madb.mageia.org/package/show/application/0/arch/x86_64/name/php-suhosin) too
 
 
 ## QuickUsage
@@ -41,6 +41,9 @@ you can install all them with: (dnf rulez!)
  # dnf builddep php.spec
 
 ```
+
+As note you need install lib64fbclient-devel or libfbclient-devel
+
 
 ### Build
 
