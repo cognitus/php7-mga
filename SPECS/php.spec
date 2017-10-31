@@ -86,6 +86,7 @@ Patch113:	php-libc-client.diff
 Patch114:	php-no_pam_in_c-client.diff
 # Functional changes
 Patch115:	php-dlopen.diff
+Patch116:   php-7.0.0-disable-zts.patch
 # Fix bugs
 Patch120:	php-tests-wddx.diff
 Patch121:	php-bug43221.diff
@@ -96,6 +97,7 @@ Patch229:	php-5.5.2-session.use_strict_mode.diff
 #Stolen from remi
 Patch230: php-7.0.0-includedir.patch
 Patch300: php-7.0.10-datetests.patch
+
 
 
 BuildRequires:	apache-devel >= 2.2
@@ -126,8 +128,8 @@ BuildRequires:	pkgconfig(x11)
 BuildRequires:	pkgconfig(xpm)
 
 BuildRequires:	firebird-devel
-BuildRequires:	libfbclient-devel
 BuildRequires:  systemd-devel
+BuildRequires:  dos2unix
 
 BuildRequires:	aspell-devel
 BuildRequires:	bzip2-devel
@@ -1354,7 +1356,10 @@ fi
 %patch105 -p1 -b .umask.droplet
 %patch113 -p1 -b .libc-client-php.droplet
 %patch114 -p0 -b .no_pam_in_c-client.droplet
+
+# Functional changes
 %patch115 -p1 -b .dlopen.droplet
+%patch116 -p1 -b  disable-zts.droplet
 
 # upstream fixes
 %patch120 -p1 -b .tests-wddx.droplet
