@@ -40,6 +40,7 @@ Patch1:		php-shared.diff
 #update init to 7.1.9
 Patch2:		php-7.1.9-mga_php.ini.diff
 Patch3:		php-libtool.diff
+Patch4:		php-phpize.diff
 Patch5:		php-phpbuilddir.diff
 # http://www.outoforder.cc/projects/apache/mod_transform/
 # http://www.outoforder.cc/projects/apache/mod_transform/patches/php5-apache2-filters.patch
@@ -128,6 +129,7 @@ BuildRequires:	pkgconfig(xpm)
 BuildRequires:	firebird-devel
 BuildRequires:	libfbclient-devel
 BuildRequires:  systemd-devel
+BuildRequires:  dos2unix
 
 BuildRequires:	aspell-devel
 BuildRequires:	bzip2-devel
@@ -1320,6 +1322,7 @@ fi
 %patch1 -p1 -b .shared.droplet
 %patch2 -p1 -b .mga_php.ini.droplet
 %patch3 -p1 -b .libtool.droplet
+%patch4 -p1 -b .phpize.droplet
 %patch5 -p1 -b .phpbuilddir.droplet
 %patch6 -p1 -b .apache2-filters.droplet
 %patch7 -p1 -b .no_libedit.droplet
