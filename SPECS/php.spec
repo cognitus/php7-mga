@@ -1442,14 +1442,6 @@ rm -rf ext/xmlrpc/libxmlrpc
 %build
 %serverbuild
 
-# aclocal workaround - to be improved
-cat `aclocal --print-ac-dir`/{libtool,ltoptions,ltsugar,ltversion,lt~obsolete}.m4 >>aclocal.m4
-
-# Force use of system libtool:
-libtoolize --force --copy
-cat `aclocal --print-ac-dir`/{libtool,ltoptions,ltsugar,ltversion,lt~obsolete}.m4 >build/libtool.m4
-
-
 # it does not work with -fPIE and someone added that to the serverbuild macro...
 CFLAGS=`echo $CFLAGS|sed -e 's|-fPIE||g'`
 CXXFLAGS=`echo $CXXFLAGS|sed -e 's|-fPIE||g'`
