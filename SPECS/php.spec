@@ -1380,8 +1380,6 @@ cp %{SOURCE5} php-fpm.sysconf
 cp %{SOURCE6} php-fpm.logrotate
 cp %{SOURCE7} create_data_file.php
 
-
-
 # nuke bogus checks becuase i fixed this years ago in our recode package
 rm -f ext/recode/config9.m4
 
@@ -1389,7 +1387,6 @@ rm -f ext/recode/config9.m4
 find -name "*.inc" | xargs chmod 644
 find -name "*.php*" | xargs chmod 644
 find -name "*README*" | xargs chmod 644
-
 
 # php7_module -> php_module to ease upgrades
 find -type f |xargs sed -i -e 's,php7_module,php_module,g'
@@ -1540,13 +1537,13 @@ for i in fpm cgi cli apxs; do
     --with-ldap=shared,%{_prefix} --with-ldap-sasl=%{_prefix} \
     --enable-mbstring=shared,%{_prefix} --enable-mbregex --with-libmbfl=%{_prefix} --with-onig=%{_prefix} \
     --with-mcrypt=shared,%{_prefix} \
-    --with-mysql-sock=/var/lib/mysql/mysql.sock --with-zlib-dir=%{_prefix} \
-    --with-mysqli=shared,%{_bindir}/mysql_config \
-    --enable-mysqlnd=shared,%{_prefix} \
+    --with-mysql=shared,mysqlnd --with-mysql-sock=/var/lib/mysql/mysql.sock --with-zlib-dir=%{_prefix} \
+    --with-mysqli=shared,mysqlnd \
+    --enable-mysqlnd=shared,%{_bindir}/mysql_config \
     --with-unixODBC=shared,%{_prefix} \
     --enable-opcache=shared \
     --enable-pcntl=shared \
-    --enable-pdo=shared,%{_prefix} --with-pdo-dblib=shared,%{_prefix} --with-pdo-mysql=shared,%{_prefix} --with-pdo-odbc=shared,unixODBC,%{_prefix} --with-pdo-pgsql=shared,%{_prefix} --with-pdo-sqlite=shared,%{_prefix} \
+    --enable-pdo=shared,%{_prefix} --with-pdo-dblib=shared,%{_prefix} --with-pdo-mysql=shared,mysqlnd --with-pdo-odbc=shared,unixODBC,%{_prefix} --with-pdo-pgsql=shared,%{_prefix} --with-pdo-sqlite=shared,%{_prefix} \
     --with-pgsql=shared,%{_prefix} \
     --enable-phar=shared \
     --enable-posix=shared \
