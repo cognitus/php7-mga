@@ -4,7 +4,7 @@
 RPM Spec, patch and diff files for build php 7.1.11 (27 Oct 2017) in Mageia 6
 
 
-After install, the package [php-timezonedb](https://madb.mageia.org/package/show/name/php-timezonedb/application/0/arch/x86_64) and all the php extension as [php-suhosin](https://madb.mageia.org/package/show/application/0/arch/x86_64/name/php-suhosin) ,
+After install, the package [php-timezonedb](https://madb.mageia.org/package/show/name/php-timezonedb/application/0/arch/x86_64) and all the php extension as
 [php-redis](https://madb.mageia.org/package/show/application/0/arch/x86_64/name/php-sasl) , [php-sasl](https://madb.mageia.org/package/show/application/0/arch/x86_64/name/php-redis) needs rebuild with this version.
 
 
@@ -24,7 +24,7 @@ create file [.rpmmacros](https://wiki.mageia.org/en/Packagers_RPM_tutorial#.rpmm
 Download and replace in
 
 ```
-~/rpmbuild/
+ $ ~/rpmbuild/
 ```
 
 ### Install dependencies
