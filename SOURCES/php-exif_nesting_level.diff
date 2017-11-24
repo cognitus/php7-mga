@@ -1,6 +1,7 @@
---- ext/exif/exif.c	2008-12-31 12:15:36.000000000 +0100
-+++ ext/exif/exif.c.oden	2009-03-27 12:15:10.000000000 +0100
-@@ -99,7 +99,7 @@ typedef unsigned char uchar;
+diff -Naurp php-7.0.2RC1/ext/exif/exif.c php-7.0.2RC1.oden/ext/exif/exif.c
+--- php-7.0.2RC1/ext/exif/exif.c	2015-12-22 16:19:30.000000000 +0100
++++ php-7.0.2RC1.oden/ext/exif/exif.c	2015-12-26 07:45:06.900022377 +0100
+@@ -89,7 +89,7 @@ typedef unsigned char uchar;
  
  #define EFREE_IF(ptr)	if (ptr) efree(ptr)
  

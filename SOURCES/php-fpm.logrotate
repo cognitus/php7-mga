@@ -1,4 +1,4 @@
-/var/log/php-fpm/php-fpm.log /var/log/php-fpm/php-fpm-slow.log {
+/var/log/php-fpm/*.log {
     rotate 5
     monthly
     missingok
@@ -7,6 +7,6 @@
     sharedscripts
     delaycompress
     postrotate
-	/bin/kill -SIGUSR1 `cat /run/php-fpm/php-fpm.pid 2>/dev/null` 2>/dev/null || true
+	/bin/kill -SIGUSR1 `cat /run/php-fpm/php-fpm.pid 2>/dev/null` > /dev/null 2>&1 || :
     endscript
 }

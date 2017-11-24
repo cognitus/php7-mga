@@ -1,7 +1,7 @@
-diff -Naurp php-5.5.9/php.ini-development php-5.5.9.oden/php.ini-development
---- php-5.5.9/php.ini-development	2014-02-12 11:31:47.296868175 +0100
-+++ php-5.5.9.oden/php.ini-development	2014-02-12 11:31:59.264868844 +0100
-@@ -1362,6 +1362,11 @@ session.use_cookies = 1
+diff -Naurp php-7.0.2RC1/php.ini-development php-7.0.2RC1.oden/php.ini-development
+--- php-7.0.2RC1/php.ini-development	2015-12-26 07:51:56.869130228 +0100
++++ php-7.0.2RC1.oden/php.ini-development	2015-12-26 07:52:34.537420491 +0100
+@@ -1267,6 +1267,11 @@ session.use_cookies = 1
  ; http://php.net/session.use-only-cookies
  session.use_only_cookies = 1
  
@@ -13,10 +13,10 @@ diff -Naurp php-5.5.9/php.ini-development php-5.5.9.oden/php.ini-development
  ; Name of the session (used as cookie name).
  ; http://php.net/session.name
  session.name = PHPSESSID
-diff -Naurp php-5.5.9/php.ini-production php-5.5.9.oden/php.ini-production
---- php-5.5.9/php.ini-production	2014-02-12 11:31:47.296868175 +0100
-+++ php-5.5.9.oden/php.ini-production	2014-02-12 11:31:59.264868844 +0100
-@@ -1362,6 +1362,11 @@ session.use_cookies = 1
+diff -Naurp php-7.0.2RC1/php.ini-production php-7.0.2RC1.oden/php.ini-production
+--- php-7.0.2RC1/php.ini-production	2015-12-26 07:51:56.869130228 +0100
++++ php-7.0.2RC1.oden/php.ini-production	2015-12-26 07:52:34.537420491 +0100
+@@ -1267,6 +1267,11 @@ session.use_cookies = 1
  ; http://php.net/session.use-only-cookies
  session.use_only_cookies = 1
  

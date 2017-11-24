@@ -1,0 +1,113 @@
+diff -Naur php-7.1.11.orig/sapi/apache2handler/config.m4 php-7.1.11/sapi/apache2handler/config.m4
+--- php-7.1.11.orig/sapi/apache2handler/config.m4	2017-11-22 17:26:14.621384159 -0300
++++ php-7.1.11/sapi/apache2handler/config.m4	2017-11-22 17:27:21.548083500 -0300
+@@ -77,7 +77,7 @@
+                 \$(mkinstalldirs) '$APXS_SYSCONFDIR' && \
+                  $APXS -S LIBEXECDIR='$APXS_LIBEXECDIR' \
+                        -S SYSCONFDIR='$APXS_SYSCONFDIR' \
+-                       -i -a -n php7"
++                       -i -a -n php"
+   fi
+ 
+   case $host_alias in
+diff -Naur php-7.1.11.orig/sapi/apache2handler/config.m4 php-7.1.11/sapi/apache2handler/config.m4
+--- php-7.1.11.orig/sapi/apache2handler/config.m4	2017-11-22 16:55:42.620007489 -0300
++++ php-7.1.11/sapi/apache2handler/config.m4	2017-11-22 17:07:04.184754118 -0300
+@@ -83,7 +83,7 @@
+   case $host_alias in
+   *aix*)
+     EXTRA_LDFLAGS="$EXTRA_LDFLAGS -Wl,-brtl -Wl,-bI:$APXS_LIBEXECDIR/httpd.exp"
+-    PHP_SELECT_SAPI(apache2handler, shared, mod_php7.c sapi_apache2.c apache_config.c php_functions.c, $APACHE_CFLAGS)
++    PHP_SELECT_SAPI(apache2handler, shared, mod_php.c sapi_apache2.c apache_config.c php_functions.c, $APACHE_CFLAGS)
+     INSTALL_IT="$INSTALL_IT $SAPI_LIBTOOL" 
+     ;;
+   *darwin*)
+@@ -99,19 +99,19 @@
+     fi
+     MH_BUNDLE_FLAGS="-bundle -bundle_loader $APXS_HTTPD $MH_BUNDLE_FLAGS"
+     PHP_SUBST(MH_BUNDLE_FLAGS)
+-    PHP_SELECT_SAPI(apache2handler, bundle, mod_php7.c sapi_apache2.c apache_config.c php_functions.c, $APACHE_CFLAGS)
+-    SAPI_SHARED=libs/libphp7.so
++    PHP_SELECT_SAPI(apache2handler, bundle, mod_php.c sapi_apache2.c apache_config.c php_functions.c, $APACHE_CFLAGS)
++    SAPI_SHARED=libs/libphp.so
+     INSTALL_IT="$INSTALL_IT $SAPI_SHARED"
+     ;;
+   *beos*)
+     if test -f _APP_; then `rm _APP_`; fi
+     `ln -s $APXS_BINDIR/httpd _APP_`
+     EXTRA_LIBS="$EXTRA_LIBS _APP_"
+-    PHP_SELECT_SAPI(apache2handler, shared, mod_php7.c sapi_apache2.c apache_config.c php_functions.c, $APACHE_CFLAGS)
++    PHP_SELECT_SAPI(apache2handler, shared, mod_php.c sapi_apache2.c apache_config.c php_functions.c, $APACHE_CFLAGS)
+     INSTALL_IT="$INSTALL_IT $SAPI_LIBTOOL"
+     ;;
+   *)
+-    PHP_SELECT_SAPI(apache2handler, shared, mod_php7.c sapi_apache2.c apache_config.c php_functions.c, $APACHE_CFLAGS) 
++    PHP_SELECT_SAPI(apache2handler, shared, mod_php.c sapi_apache2.c apache_config.c php_functions.c, $APACHE_CFLAGS) 
+     INSTALL_IT="$INSTALL_IT $SAPI_LIBTOOL"
+     ;;
+   esac
+diff -Naur php-7.1.11.orig/sapi/apache2handler/mod_php7.c php-7.1.11/sapi/apache2handler/mod_php7.c
+--- php-7.1.11.orig/sapi/apache2handler/mod_php7.c	2017-11-22 16:55:42.620007489 -0300
++++ php-7.1.11/sapi/apache2handler/mod_php7.c	2017-11-22 17:07:43.682565579 -0300
+@@ -25,7 +25,7 @@
+ #include "php.h"
+ #include "php_apache.h"
+ 
+-AP_MODULE_DECLARE_DATA module php7_module = {
++AP_MODULE_DECLARE_DATA module php_module = {
+ 	STANDARD20_MODULE_STUFF,
+ 	create_php_config,		/* create per-directory config structure */
+ 	merge_php_config,		/* merge per-directory config structures */
+diff -Naur php-7.1.11.orig/sapi/apache2handler/php_apache.h php-7.1.11/sapi/apache2handler/php_apache.h
+--- php-7.1.11.orig/sapi/apache2handler/php_apache.h	2017-11-22 16:55:42.621007484 -0300
++++ php-7.1.11/sapi/apache2handler/php_apache.h	2017-11-22 17:12:52.170121458 -0300
+@@ -31,11 +31,11 @@
+ 
+ /* Enable per-module logging in Apache 2.4+ */
+ #ifdef APLOG_USE_MODULE
+-APLOG_USE_MODULE(php7);
++APLOG_USE_MODULE(php);
+ #endif
+ 
+ /* Declare this so we can get to it from outside the sapi_apache2.c file */
+-extern module AP_MODULE_DECLARE_DATA php7_module;
++extern module AP_MODULE_DECLARE_DATA php_module;
+ 
+ /* A way to specify the location of the php.ini dir in an apache directive */
+ extern char *apache2_php_ini_path_override;
+diff -Naur php-7.1.11.orig/sapi/apache2handler/php.sym php-7.1.11/sapi/apache2handler/php.sym
+--- php-7.1.11.orig/sapi/apache2handler/php.sym	2017-11-22 16:55:42.620007489 -0300
++++ php-7.1.11/sapi/apache2handler/php.sym	2017-11-22 17:13:05.587058926 -0300
+@@ -1 +1 @@
+-php7_module
++php_module
+diff -Naur php-7.1.11.orig/sapi/apache2handler/sapi_apache2.c php-7.1.11/sapi/apache2handler/sapi_apache2.c
+--- php-7.1.11.orig/sapi/apache2handler/sapi_apache2.c	2017-11-22 16:55:42.620007489 -0300
++++ php-7.1.11/sapi/apache2handler/sapi_apache2.c	2017-11-22 17:13:21.385985293 -0300
+@@ -61,7 +61,7 @@
+ 
+ #define PHP_MAGIC_TYPE "application/x-httpd-php"
+ #define PHP_SOURCE_MAGIC_TYPE "application/x-httpd-php-source"
+-#define PHP_SCRIPT "php7-script"
++#define PHP_SCRIPT "php-script"
+ 
+ /* A way to specify the location of the php.ini dir in an apache directive */
+ char *apache2_php_ini_path_override = NULL;
+@@ -561,7 +561,7 @@
+ 	HashTable config;
+ } php_conf_rec;
+ 		zend_string *str;
+-		php_conf_rec *c = ap_get_module_config(r->per_dir_config, &php7_module);
++		php_conf_rec *c = ap_get_module_config(r->per_dir_config, &php_module);
+ 
+ 		ZEND_HASH_FOREACH_STR_KEY(&c->config, str) {
+ 			zend_restore_ini_entry(str, ZEND_INI_STAGE_SHUTDOWN);
+@@ -590,7 +590,7 @@
+ 
+ #define PHPAP_INI_OFF php_apache_ini_dtor(r, parent_req);
+ 
+-	conf = ap_get_module_config(r->per_dir_config, &php7_module);
++	conf = ap_get_module_config(r->per_dir_config, &php_module);
+ 
+ 	/* apply_config() needs r in some cases, so allocate server_context early */
+ 	ctx = SG(server_context);

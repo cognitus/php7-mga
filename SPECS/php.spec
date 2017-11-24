@@ -3,8 +3,7 @@
 %define mod_name mod_php
 %define load_order 70
 
-%define build_test 1
-
+%define build_test 0
 %{?_with_test: %{expand: %%global build_test 1}}
 %{?_without_test: %{expand: %%global build_test 0}}
 
@@ -12,17 +11,21 @@
 %{?_with_libmagic: %{expand: %%global build_libmagic 1}}
 %{?_without_libmagic: %{expand: %%global build_libmagic 0}}
 
-%define php7_common_major 5
-%define libname %mklibname php7_common %{php7_common_major}
+%global __requires_exclude BEGIN|mkinstalldirs|pear\\(|/usr/bin/tclsh
+
+%define php_common_major 7
+%define libname %mklibname php_common %{php_common_major}
 
 # enforce versioned postgresql dependencies because of multiple version
 # availability in the distribution
-%define postgresql_version %(pg_config &>/dev/null && pg_config 2>/dev/null | grep "^VERSION" | awk '{ print $4 }' 2>/dev/null || echo 0)
+%define postgresql_version %(pg_config &>/dev/null && pg_config 2>/dev/null | awk '/^VERSION/ { print $4 }' | sed -re 's/rc[0-9]+$//'|| echo 0)
 
-Summary:	The PHP7 scripting language
+%define _RC %nil
+
+Summary:	The PHP scripting language
 Name:		php
 Version:	7.1.11
-Release:	%mkrel 1
+Release:	%mkrel 3
 Source0:	http://php.net/distributions/php-%{version}.tar.xz
 Group:		Development/PHP
 License:	PHP License
@@ -36,13 +39,11 @@ Source6:	php-fpm.logrotate
 # S7 comes from ext/fileinfo/create_data_file.php but could be removed someday
 Source7:	create_data_file.php
 Source9:	php-fpm-tmpfiles.conf
+Source10:	00-php-fpm.conf
 Patch1:		php-shared.diff
-#update init to 7.1.9
-Patch2:		php-7.1.9-mga_php.ini.diff
+Patch2:		php-7.1-mga_php.ini.diff
 Patch3:		php-libtool.diff
 Patch5:		php-phpbuilddir.diff
-# http://www.outoforder.cc/projects/apache/mod_transform/
-# http://www.outoforder.cc/projects/apache/mod_transform/patches/php5-apache2-filters.patch
 Patch6:		php5-apache2-filters.diff
 # remove libedit once and for all
 Patch7:		php-no_libedit.diff
@@ -59,17 +60,8 @@ Patch22:	php-dba-link.patch
 Patch23:	php-zlib-for-getimagesize.patch
 #(spuhler) taken from Mandriva
 Patch26:	php-5.3.9RC2-mcrypt-libs.diff
-# for kolab2
-# P50 was rediffed from PLD (php-5.3.3-8.src.rpm) which merges the annotation and status-current patches
-# Patch27:	php-imap-annotation+status-current.diff 
-# P51 was taken from http://kolab.org/cgi-bin/viewcvs-kolab.cgi/server/php/patches/php-5.3.2/
-# Patch28:	php-imap-myrights.diff
-# was dropped by kolab2
-
-
-Patch29:	php-5.3.x-fpm-0.6.5-shared.diff
-Patch30:	php-5.3.x-fpm-0.6.5-mdv_conf.diff
-
+Patch29:	php-7.0.0RC5-fpm-0.6.5-shared.diff
+Patch30:	php-7.0.0RC5-fpm-0.6.5-mdv_conf.diff
 #Stolen from remi - Functional changes
 Patch48: php-7.1.9-openssl-load-config.patch
 #####################################################################
@@ -94,13 +86,13 @@ Patch121:	php-bug43221.diff
 Patch123:	php-bug43589.diff
 Patch226:	php-no-fvisibility_hidden_fix.diff
 Patch227:	php-5.3.0RC1-enchant_lib64_fix.diff
-Patch229:	php-5.5.2-session.use_strict_mode.diff
+Patch228:	php-5.3.0RC2-xmlrpc-epi_fix.diff
+Patch229:	php-7.0.2RC1-session.use_strict_mode.diff
 #Stolen from remi
 Patch230: php-7.0.0-includedir.patch
 Patch300: php-7.0.10-datetests.patch
-
-
-
+# apache-mod_php
+Patch400:	php-7.0.0RC5-apache-mod_php.diff
 BuildRequires:	apache-devel >= 2.2
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -131,6 +123,7 @@ BuildRequires:	pkgconfig(xpm)
 BuildRequires:	firebird-devel
 BuildRequires:  systemd-devel
 BuildRequires:  dos2unix
+BuildRequires:	pkgconfig(fbclient)
 
 BuildRequires:	aspell-devel
 BuildRequires:	bzip2-devel
@@ -168,23 +161,23 @@ BuildRequires:	magic-devel
 Epoch: 3
 
 %description
-PHP7 is an HTML-embeddable scripting language. PHP7 offers built-in database
+PHP is an HTML-embeddable scripting language. PHP offers built-in database
 integration for several commercial and non-commercial database management
-systems, so writing a database-enabled script with PHP7 is fairly simple. The
-most common use of PHP7 coding is probably as a replacement for CGI scripts.
+systems, so writing a database-enabled script with PHP is fairly simple. The
+most common use of PHP coding is probably as a replacement for CGI scripts.
 
 %package	ini
 Summary:	INI files for PHP
 Group:		Development/Other
 
-%description ini
+%description	ini
 The php-ini package contains the ini file required for PHP.
 
 
-%package -n apache-mod_php
-Summary:	The PHP7 HTML-embedded scripting language for use with apache
+%package -n	apache-mod_php
+Summary:	The PHP HTML-embedded scripting language for use with apache
 Group:		System/Servers
-Requires(pre): rpm-helper
+Requires(pre):	rpm-helper
 Requires(postun): rpm-helper
 Requires:	apache >= 2.2
 #TODO are theses really required ?
@@ -199,7 +192,6 @@ Requires:	php-openssl >= %{epoch}:%{version}
 Requires:	php-pcre >= %{epoch}:%{version}
 Requires:	php-posix >= %{epoch}:%{version}
 Requires:	php-session >= %{epoch}:%{version}
-Recommends:	php-suhosin >= 0.9.33
 Requires:	php-sysvsem >= %{epoch}:%{version}
 Requires:	php-sysvshm >= %{epoch}:%{version}
 Requires:	php-tokenizer >= %{epoch}:%{version}
@@ -211,23 +203,18 @@ Requires:	php-timezonedb >= 3:2012.3
 # php is not fully thread safe
 # http://www.php.net/manual/en/faq.installation.php#faq.installation.apache2
 # http://stackoverflow.com/questions/681081/is-php-thread-safe
-
 Epoch:		%{epoch}
 
 %description -n apache-mod_php
-PHP7 is an HTML-embedded scripting language. PHP7 attempts to make it easy for
-developers to write dynamically generated web pages. PHP7 also offers built-in
-database integration for several commercial and non-commercial database
-management systems, so writing a database-enabled web page with PHP7 is fairly
-simple. The most common use of PHP coding is probably as a replacement for CGI
-scripts. The %{name} module enables the apache web server to understand
-and process the embedded PHP language in web pages.
+PHP is an HTML-embeddable scripting language. PHP offers built-in database
+integration for several commercial and non-commercial database management
+systems, so writing a database-enabled script with PHP is fairly simple. The
+most common use of PHP coding is probably as a replacement for CGI scripts.
 
-This package contains PHP version 7. You'll also need to install the apache web
-server.
+This package contains the PHP apache module.
 
 %package	cli
-Summary:	PHP7 CLI interface
+Summary:	PHP CLI interface
 Group:		Development/Other
 URL:		http://www.php.net/cli
 Requires:	%{libname} >= %{epoch}:%{version}
@@ -242,7 +229,6 @@ Requires:	php-openssl >= %{epoch}:%{version}
 Requires:	php-pcre >= %{epoch}:%{version}
 Requires:	php-posix >= %{epoch}:%{version}
 Requires:	php-session >= %{epoch}:%{version}
-Recommends:	php-suhosin >= 0.9.33
 Requires:	php-sysvsem >= %{epoch}:%{version}
 Requires:	php-sysvshm >= %{epoch}:%{version}
 Requires:	php-timezonedb >= 3:2012.3
@@ -255,12 +241,17 @@ Provides:	php = %{epoch}:%{version}
 Provides:	/usr/bin/php
 
 %description	cli
+PHP is an HTML-embeddable scripting language. PHP offers built-in database
+integration for several commercial and non-commercial database management
+systems, so writing a database-enabled script with PHP is fairly simple. The
+most common use of PHP coding is probably as a replacement for CGI scripts.
+
 This package contains a command-line (CLI) version of php. You must also
-install libphp7_common. If you need apache module support, you also need to
+install %{libname}. If you need apache module support, you also need to
 install the apache-mod_php package.
 
 %package	cgi
-Summary:	PHP7 CGI interface
+Summary:	PHP CGI interface
 Group:		Development/Other
 Requires:	%{libname} >= %{epoch}:%{version}
 Requires:	php-ctype >= %{epoch}:%{version}
@@ -274,7 +265,6 @@ Requires:	php-openssl >= %{epoch}:%{version}
 Requires:	php-pcre >= %{epoch}:%{version}
 Requires:	php-posix >= %{epoch}:%{version}
 Requires:	php-session >= %{epoch}:%{version}
-Recommends:	php-suhosin >= 0.9.33
 Requires:	php-sysvsem >= %{epoch}:%{version}
 Requires:	php-sysvshm >= %{epoch}:%{version}
 Requires:	php-timezonedb >= 3:2012.3
@@ -283,35 +273,34 @@ Requires:	php-xmlreader >= %{epoch}:%{version}
 Requires:	php-xmlwriter >= %{epoch}:%{version}
 Requires:	php-zlib >= %{epoch}:%{version}
 Requires:	php-xml >= %{epoch}:%{version}
-Provides:	php = %{epoch}:%{version}
+Obsoletes:	php-mcal < 0.6-51
 Provides:	php-fcgi = %{epoch}:%{version}-%{release}
-Obsoletes:	php-fcgi
 # because of a added compat softlink
 Conflicts:	php-fcgi < %{epoch}:%{version}-%{release}
 
 %description	cgi
-PHP7 is an HTML-embeddable scripting language. PHP7 offers built-in database
+PHP is an HTML-embeddable scripting language. PHP offers built-in database
 integration for several commercial and non-commercial database management
-systems, so writing a database-enabled script with PHP7 is fairly simple. The
-most common use of PHP7 coding is probably as a replacement for CGI scripts.
+systems, so writing a database-enabled script with PHP is fairly simple. The
+most common use of PHP coding is probably as a replacement for CGI scripts.
 
 This package contains a standalone (CGI) version of php with FastCGI support.
-You must also install libphp7_common. If you need apache module support, you
+You must also install %{libname}. If you need apache module support, you
 also need to install the apache-mod_php package.
 
 %package -n	%{libname}
-Summary:	Shared library for PHP7
+Summary:	Shared library for PHP
 Group:		Development/Other
 Provides:	php-pcre = %{epoch}:%{version}
 Provides:	php-simplexml = %{epoch}:%{version}
 
 %description -n	%{libname}
 This package provides the common files to run with different implementations of
-PHP7. You need this package if you install the php standalone package or a
+PHP. You need this package if you install the php standalone package or a
 webserver with php support (ie: apache-mod_php).
 
 %package	devel
-Summary:	Development package for PHP7
+Summary:	Development package for PHP
 Group:		Development/C
 Requires:	%{libname} >= %{epoch}:%{version}
 Requires:	autoconf automake libtool
@@ -330,7 +319,7 @@ Requires:	re2c >= 0.9.11
 Requires:	tcl
 
 %description	devel
-The php-devel package lets you compile dynamic extensions to PHP7. Included
+The php-devel package lets you compile dynamic extensions to PHP. Included
 here is the source for the php extensions. Instead of recompiling the whole php
 binary to add support for, say, oracle, install this package and use the new
 self-contained extensions support. For more information, read the file
@@ -483,7 +472,7 @@ spell libraries:
 
  - aspell/pspell (intended to replace ispell)
  - hspell (hebrew)
- - ispell 
+ - ispell
  - hunspell (OpenOffice project, mozilla)
  - uspell (primarily Yiddish, Hebrew, and Eastern European languages)
    A plugin system allows to add custom spell support.
@@ -542,7 +531,7 @@ speaking the File Transfer Protocol (FTP) as defined in
 http://www.faqs.org/rfcs/rfc959. This extension is meant for detailed access to
 an FTP server providing a wide range of control to the executing script. If you
 only wish to read from or write to a file on an FTP server, consider using the
-ftp:// wrapper  with the filesystem functions  which provide a simpler and more
+ftp:// wrapper with the filesystem functions  which provide a simpler and more
 intuitive interface.
 
 %package	gd
@@ -551,7 +540,6 @@ Group:		Development/PHP
 URL:		http://www.php.net/gd
 Requires:	%{libname} >= %{epoch}:%{version}
 Provides:	php-gd-bundled = %{epoch}:%{version}
-Obsoletes:	php-gd-bundled
 
 %description	gd
 This is a dynamic shared object (DSO) for PHP that will add GD support,
@@ -639,7 +627,6 @@ Summary:	Interbase/Firebird database module for PHP
 Group:		Development/PHP
 URL:		http://www.php.net/ibase
 Requires:	%{libname} >= %{epoch}:%{version}
-Obsoletes:	php-firebird
 Provides:	php-firebird = %{epoch}:%{version}
 
 %description	interbase
@@ -745,6 +732,8 @@ Summary:	MySQL native database module for PHP
 Group:		Development/PHP
 URL:		http://www.php.net/mysqlnd
 Requires:	%{libname} >= %{epoch}:%{version}
+Provides:	php-mysql = %{epoch}:%{version}-%{release}
+Obsoletes:	php-mysql < 7.0
 
 %description	mysqlnd
 This is a dynamic shared object (DSO) for PHP that will add MySQL native
@@ -775,7 +764,7 @@ Summary:	Zend OPcache for PHP
 Group:		Development/PHP
 URL:		http://www.php.net/opcache
 Requires:	%{libname} >= %{epoch}:%{version}
-Conflicts:	php-xcache
+Obsoletes:	php-xcache < 3.2.1
 
 %description	opcache
 This is a dynamic shared object (DSO) for PHP that will add OPcache support.
@@ -821,7 +810,7 @@ Read the documentation at http://www.php.net/pdo for more information.
 Summary:	Sybase Interface driver for PDO
 Group:		Development/PHP
 URL:		http://www.php.net/pdo_dblib
-Requires:       freetds >= 0.63
+Requires:	freetds >= 0.63
 Requires:	php-pdo >= %{epoch}:%{version}
 Requires:	%{libname} >= %{epoch}:%{version}
 
@@ -852,7 +841,7 @@ Requires:	%{name}-mysqlnd = %{epoch}:%{version}
 %description	pdo_mysql
 PDO_MYSQL is a driver that implements the PHP Data Objects (PDO) interface to
 enable access from PHP to MySQL 3.x, 4.x and 5.x databases.
- 
+
 PDO_MYSQL will take advantage of native prepared statement support present in
 MySQL 4.1 and higher. If you're using an older version of the mysql client
 libraries, PDO will emulate them for you.
@@ -872,10 +861,10 @@ PDO_ODBC is a driver that implements the PHP Data Objects (PDO) interface to
 enable access from PHP to databases through ODBC drivers or through the IBM DB2
 Call Level Interface (DB2 CLI) library. PDO_ODBC currently supports three
 different "flavours" of database drivers:
- 
+
  o ibm-db2  - Supports access to IBM DB2 Universal Database, Cloudscape, and
               Apache Derby servers through the free DB2 client. ibm-db2 is not
-	      supported in Mageia.
+              supported in Mageia.
 
  o unixODBC - Supports access to database servers through the unixODBC driver
               manager and the database's own ODBC drivers.
@@ -1021,7 +1010,7 @@ between almost any pair. Most RFC 1345 character sets are supported.
 Summary:	Session extension module for PHP
 Group:		Development/PHP
 URL:		http://www.php.net/session
-Requires(pre): rpm-helper
+Requires(pre):	rpm-helper
 Requires(postun): rpm-helper
 Requires:	%{libname} >= %{epoch}:%{version}
 Requires:	webserver-base
@@ -1094,7 +1083,7 @@ Group:		Development/PHP
 URL:		http://www.php.net/sqlite3
 Requires:	php-pdo >= %{epoch}:%{version}
 Requires:	%{libname} >= %{epoch}:%{version}
-Conflicts:	php-sqlite
+Obsoletes:	php-sqlite < 1.0.4
 
 %description	sqlite3
 This is an extension for the SQLite Embeddable SQL Database Engine. SQLite is a
@@ -1176,7 +1165,7 @@ XML events.
 Summary:	Xmlreader extension module for PHP
 Group:		Development/PHP
 URL:		http://www.php.net/xmlreader
-Requires:	php-dom
+Requires:	php-dom >= %{epoch}:%{version}
 Requires:	%{libname} >= %{epoch}:%{version}
 
 %description	xmlreader
@@ -1228,7 +1217,7 @@ Requires:	php-xml
 Requires:	%{libname} >= %{epoch}:%{version}
 
 %description	wddx
-This is a dynamic shared object (DSO) that adds wddx support to PHP. 
+This is a dynamic shared object (DSO) that adds wddx support to PHP.
 
 These functions are intended for work with WDDX (http://www.openwddx.org/)
 
@@ -1242,12 +1231,12 @@ This is a dynamic shared object (DSO) for PHP that will add zip support to
 create and read zip files using the libzip library.
 
 %package	fpm
-Summary:	PHP7 FastCGI Process Manager
+Summary:	PHP FastCGI Process Manager
 Group:		Development/Other
 Requires(post): systemd >= %{systemd_required_version}
 Requires(post): rpm-helper
 Requires(preun): rpm-helper
-Requires(pre): rpm-helper
+Requires(pre):	rpm-helper
 Requires(postun): rpm-helper
 Requires:	%{libname} >= %{epoch}:%{version}
 Requires:	php-ctype >= %{epoch}:%{version}
@@ -1261,7 +1250,6 @@ Requires:	php-openssl >= %{epoch}:%{version}
 Requires:	php-pcre >= %{epoch}:%{version}
 Requires:	php-posix >= %{epoch}:%{version}
 Requires:	php-session >= %{epoch}:%{version}
-Recommends:	php-suhosin >= 0.9.33
 Requires:	php-sysvsem >= %{epoch}:%{version}
 Requires:	php-sysvshm >= %{epoch}:%{version}
 Requires:	php-timezonedb >= 3:2012.3
@@ -1274,13 +1262,13 @@ Requires:	webserver-base
 Provides:	php = %{epoch}:%{version}
 
 %description	fpm
-PHP7 is an HTML-embeddable scripting language. PHP7 offers built-in database
+PHP is an HTML-embeddable scripting language. PHP offers built-in database
 integration for several commercial and non-commercial database management
-systems, so writing a database-enabled script with PHP7 is fairly simple. The
-most common use of PHP7 coding is probably as a replacement for CGI scripts.
+systems, so writing a database-enabled script with PHP is fairly simple. The
+most common use of PHP coding is probably as a replacement for CGI scripts.
 
 This package contains the FastCGI Process Manager. You must also install
-libphp7_common.
+%{libname}.
 
 %package -n	phpdbg
 Summary:	The interactive PHP debugger
@@ -1289,13 +1277,13 @@ Requires:	%{libname} >= %{epoch}:%{version}
 Requires:	php >= %{epoch}:%{version}
 
 %description -n	phpdbg
-PHP7 is an HTML-embeddable scripting language. PHP7 offers built-in database
+PHP is an HTML-embeddable scripting language. PHP offers built-in database
 integration for several commercial and non-commercial database management
-systems, so writing a database-enabled script with PHP7 is fairly simple. The
-most common use of PHP7 coding is probably as a replacement for CGI scripts.
+systems, so writing a database-enabled script with PHP is fairly simple. The
+most common use of PHP coding is probably as a replacement for CGI scripts.
 
 This package contains the The interactive PHP debugger. You must also install
-libphp7_common.
+%{libname}.
 
 Implemented as a SAPI module, phpdbg can excert complete control over the
 environment without impacting the functionality or performance of your code.
@@ -1308,14 +1296,7 @@ export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
 export LANGUAGE=en_US.utf-8
 export LANGUAGES=en_US.utf-8
-%setup -q
-
-%if %{build_libmagic}
-if ! [ -f %{_datadir}/misc/magic.mgc ]; then
-    echo "ERROR: the %{_datadir}/misc/magic.mgc file is needed"
-    exit 1
-fi
-%endif
+%setup -q -n php-%{version}%{_RC}
 
 # the ".droplet" suffix is here to nuke the backups later..., we don't want those in php-devel
 
@@ -1338,7 +1319,6 @@ fi
 %patch22 -p1 -b .dba-link.droplet
 %patch23 -p1 -b .zlib-for-getimagesize.droplet
 %patch26 -p0 -b .mcrypt-libs.droplet
-
 # fpm stuff
 %patch29 -p1 -b .shared-fpm.droplet
 %patch30 -p1 -b .fpmmdv.droplet
@@ -1348,7 +1328,7 @@ fi
 #####################################################################
 # stolen from debian
 %patch50 -p1 -b .session.save_path.droplet
-%patch51 -p0 -b .exif_nesting_level.droplet
+%patch51 -p1 -b .exif_nesting_level.droplet
 
 #####################################################################
 # Stolen from fedora
@@ -1368,17 +1348,25 @@ fi
 %patch123 -p1 -b .bug43589.droplet
 %patch226 -p1 -b .no-fvisibility_hidden.droplet
 %patch227 -p0 -b .enchant_lib64_fix.droplet
+%patch228 -p0 -b .xmlrpc-epi_fix.droplet
 %patch229 -p1 -b .session.use_strict_mode.droplet
 
 #Stolen from remi - Build fixes
 %patch230 -p1 -b .includedir.droplet
 %patch300 -p1 -b .datetests.droplet
 
+# mod_php
+%patch400 -p1
+#weird bug with diff in next file 
+sed -i -e 's,php7,php,g' sapi/apache2handler/config.m4
+mv sapi/apache2handler/mod_php%{php_common_major}.c sapi/apache2handler/mod_php.c
+
 cp %{SOURCE1} php-test.ini
 cp %{SOURCE4} php-fpm.service
 cp %{SOURCE5} php-fpm.sysconf
 cp %{SOURCE6} php-fpm.logrotate
 cp %{SOURCE7} create_data_file.php
+cp %{SOURCE10} 00-php-fpm.conf
 
 # nuke bogus checks becuase i fixed this years ago in our recode package
 rm -f ext/recode/config9.m4
@@ -1387,10 +1375,6 @@ rm -f ext/recode/config9.m4
 find -name "*.inc" | xargs chmod 644
 find -name "*.php*" | xargs chmod 644
 find -name "*README*" | xargs chmod 644
-
-# php7_module -> php_module to ease upgrades
-find -type f |xargs sed -i -e 's,php7_module,php_module,g'
-sed -i -e 's,APLOG_USE_MODULE(php7,APLOG_USE_MODULE(php,g' sapi/apache2handler/*
 
 mkdir -p php-devel/extensions
 mkdir -p php-devel/sapi
@@ -1404,7 +1388,7 @@ rm -f php-devel/extensions/standard/.deps
 rm -f php-devel/extensions/skeleton/EXPERIMENTAL
 
 # SAPI
-cp -dpR sapi/* php-devel/sapi/ 
+cp -dpR sapi/* php-devel/sapi/
 rm -f php-devel/sapi/thttpd/stub.c
 rm -f php-devel/sapi/cgi/php.sym
 rm -f php-devel/sapi/fastcgi/php.sym
@@ -1440,14 +1424,8 @@ rm -rf ext/xmlrpc/libxmlrpc
 %build
 %serverbuild
 
-# it does not work with -fPIE and someone added that to the serverbuild macro...
-CFLAGS=`echo $CFLAGS|sed -e 's|-fPIE||g'`
-CXXFLAGS=`echo $CXXFLAGS|sed -e 's|-fPIE||g'`
-
-#export CFLAGS="`echo ${CFLAGS} | sed s/O2/O0/` -fPIC -L%{_libdir} -fno-strict-aliasing"
-export CFLAGS="${CFLAGS} -fPIC -L%{_libdir} -fno-strict-aliasing"
-export CXXFLAGS="${CFLAGS}"
-export RPM_OPT_FLAGS="${CFLAGS}"
+export CFLAGS="${CFLAGS} -fno-strict-aliasing"
+export LDFLAGS="%{ldflags}"
 
 cat > php-devel/buildext <<EOF
 #!/bin/bash
@@ -1475,12 +1453,10 @@ export oldstyleextdir=yes
 export EXTENSION_DIR="%{_libdir}/php/extensions"
 export PROG_SENDMAIL="%{_sbindir}/sendmail"
 export GD_SHARED_LIBADD="$GD_SHARED_LIBADD -lm"
-SAFE_LDFLAGS=`echo %{ldflags}|sed -e 's|-Wl,--no-undefined||g'`
-export LDFLAGS="$SAFE_LDFLAGS"
 
 # never use "--disable-rpath", it does the opposite
 
-# Configure php7
+# Configure php
 for i in fpm cgi cli apxs; do
 ./configure \
     `[ $i = fpm ] && echo --disable-cli --enable-fpm --with-libxml-dir=%{_prefix} --with-fpm-user=apache --with-fpm-group=apache --with-fpm-systemd` \
@@ -1528,7 +1504,7 @@ for i in fpm cgi cli apxs; do
     --enable-intl=shared --with-icu-dir=%{_prefix} \
     --enable-json=shared \
     --with-openssl-dir=%{_prefix} --enable-ftp=shared \
-    --with-gd=shared,%{_prefix} --with-jpeg-dir=%{_prefix} --with-png-dir=%{_prefix} --with-zlib-dir=%{_prefix} --with-xpm-dir=%{_prefix}/X11R6 --with-freetype-dir=%{_prefix} --enable-gd-native-ttf \
+    --with-gd=shared,%{_prefix} --with-jpeg-dir=%{_prefix} --with-webp-dir=%{_prefix} --with-png-dir=%{_prefix} --with-zlib-dir=%{_prefix} --with-xpm-dir=%{_prefix}/X11R6 --with-freetype-dir=%{_prefix} --enable-gd-native-ttf \
     --with-gettext=shared,%{_prefix} \
     --with-gmp=shared,%{_prefix} \
     --enable-hash=shared,%{_prefix} \
@@ -1537,8 +1513,7 @@ for i in fpm cgi cli apxs; do
     --with-ldap=shared,%{_prefix} --with-ldap-sasl=%{_prefix} \
     --enable-mbstring=shared,%{_prefix} --enable-mbregex --with-libmbfl=%{_prefix} --with-onig=%{_prefix} \
     --with-mcrypt=shared,%{_prefix} \
-    --with-mysql=shared,mysqlnd --with-mysql-sock=/var/lib/mysql/mysql.sock --with-zlib-dir=%{_prefix} \
-    --with-mysqli=shared,mysqlnd \
+    --with-mysqli=shared,mysqlnd --with-mysql-sock=/var/lib/mysql/mysql.sock \
     --enable-mysqlnd=shared,%{_bindir}/mysql_config \
     --with-unixODBC=shared,%{_prefix} \
     --enable-opcache=shared \
@@ -1570,7 +1545,8 @@ for i in fpm cgi cli apxs; do
     --enable-wddx=shared --with-libxml-dir=%{_prefix} \
     --enable-zip=shared --with-libzip=%{_prefix} \
     --with-interbase=shared,%{_libdir}/firebird --with-pdo-firebird=shared,%{_libdir}/firebird \
-    --enable-phpdbg
+    --enable-phpdbg \
+    --enable-phpdbg-webhelper
 
 cp -f Makefile Makefile.$i
 
@@ -1586,14 +1562,14 @@ done
 perl -pi -e "s|^#define CONFIGURE_COMMAND .*|#define CONFIGURE_COMMAND \"This is irrelevant, look inside the %{_docdir}/php-doc/configure_command file. urpmi is your friend, use it to install extensions not shown below.\"|g" main/build-defs.h
 cp config.nice configure_command; chmod 644 configure_command
 
-%make PHPDBG_EXTRA_LIBS="-lreadline"
+%make_build PHPDBG_EXTRA_LIBS="-lreadline"
 
 %if %{build_libmagic}
 # keep in sync with latest system magic, the next best thing when system libmagic can't be used...
 sapi/cli/php create_data_file.php %{_datadir}/misc/magic.mgc > ext/fileinfo/data_file.c
 rm -rf ext/fileinfo/.libs ext/fileinfo/*.lo ext/fileinfo/*.la modules/fileinfo.so modules/fileinfo.la
 cp -p ext/fileinfo/data_file.c php-devel/extensions/fileinfo/data_file.c
-%make
+%make_build
 %endif
 
 # make php-cgi
@@ -1605,22 +1581,6 @@ cp -af php_config.h.apxs main/php_config.h
 cp -af php_config.h.fpm main/php_config.h
 make -f Makefile.fpm sapi/fpm/php-fpm
 cp -af php_config.h.apxs main/php_config.h
-
-# make apache-mod_php
-mkdir mod_php
-cd mod_php
-cp -dpR ../php-devel/sapi/apache2handler/* .
-cp ../main/internal_functions.c .
-cp ../ext/date/lib/timelib_config.h .
-mv mod_php7.c mod_php.c
-find . -type f |xargs dos2unix
-apxs \
-	`apr-1-config --link-ld --libs` \
-	`xml2-config --cflags` \
-	-I. -I.. -I../main -I../Zend -I../TSRM \
-	-L../libs -lphp7_common \
-	-c mod_php.c sapi_apache2.c apache_config.c \
-	php_functions.c internal_functions.c
 
 %install
 
@@ -1636,7 +1596,7 @@ install -d %{buildroot}%{_datadir}/php
 
 make -f Makefile.apxs install \
 	INSTALL_ROOT=%{buildroot} \
-	INSTALL_IT="\$(LIBTOOL) --mode=install install libphp7_common.la %{buildroot}%{_libdir}/"
+	INSTALL_IT="\$(LIBTOOL) --mode=install install libphp%{php_common_major}_common.la %{buildroot}%{_libdir}/"
 
 # borked autopoo
 rm -f %{buildroot}%{_bindir}/php %{buildroot}%{_bindir}/php-cgi %{buildroot}%{_bindir}/phpdbg
@@ -1667,6 +1627,7 @@ install -d %{buildroot}/var/log/php-fpm
 install -D -p -m 0644 %{SOURCE9} %{buildroot}%{_tmpfilesdir}/php-fpm.conf
 # a small bug here...
 echo "; place your config here" > %{buildroot}%{_sysconfdir}/php-fpm.d/default.conf
+install -m0644 sapi/fpm/www.conf %{buildroot}%{_sysconfdir}/php-fpm.d/
 
 ./libtool --silent --mode=install install sapi/fpm/php-fpm %{buildroot}%{_sbindir}/php-fpm
 install -m0644 sapi/fpm/php-fpm.8 %{buildroot}%{_mandir}/man8/
@@ -1674,11 +1635,29 @@ install -m0644 sapi/fpm/php-fpm.conf %{buildroot}%{_sysconfdir}/
 install -m0644 php-fpm.service %{buildroot}%{_unitdir}/php-fpm.service
 install -m0644 php-fpm.sysconf %{buildroot}%{_sysconfdir}/sysconfig/php-fpm
 install -m0644 php-fpm.logrotate %{buildroot}%{_sysconfdir}/logrotate.d/php-fpm
+install -d %{buildroot}%{_httpd_modconfdir}
+install -m0644 00-php-fpm.conf %{buildroot}%{_httpd_modconfdir}/00-php-fpm.conf
 
 # adjust a bit
 perl -pi -e "s|^pid.*|pid = /run/php-fpm/php-fpm.pid|g" %{buildroot}%{_sysconfdir}/php-fpm.conf
 
 ln -snf extensions %{buildroot}%{_usrsrc}/php-devel/ext
+
+# mod_php
+install -d %{buildroot}%{_httpd_moddir}
+install -d %{buildroot}%{_httpd_modconfdir}
+
+install -m0755 .libs/libphp%{php_common_major}.so %{buildroot}%{_httpd_moddir}/%{mod_name}.so
+
+cat > %{buildroot}%{_httpd_modconfdir}/%{load_order}_%{mod_name}.conf <<EOF
+LoadModule php_module modules/%{mod_name}.so
+
+AddType application/x-httpd-php .php
+AddType application/x-httpd-php .phtml
+AddType application/x-httpd-php-source .phps
+
+DirectoryIndex index.php index.phtml
+EOF
 
 # extensions
 echo "extension = openssl.so"		> %{buildroot}%{_sysconfdir}/php.d/21_openssl.ini
@@ -1757,22 +1736,6 @@ install -m0755 %{SOURCE2} %{buildroot}%{_libdir}/php/maxlifetime
 install -m0644 %{SOURCE3} %{buildroot}%{_sysconfdir}/cron.d/php
 install -m0644 php.ini-production %{buildroot}%{_sysconfdir}/php.ini
 install -m0644 php.ini-production %{buildroot}%{_sysconfdir}/php-cgi-fcgi.ini
-
-# mod_php
-install -d %{buildroot}%{_sysconfdir}/httpd/conf/modules.d
-install -d %{buildroot}%{_libdir}/httpd/modules
-install -m 755 mod_php/.libs/*.so %{buildroot}%{_httpd_moddir}
-#install -m0755 .libs/libphp7.so %{buildroot}%{_httpd_moddir}/%{mod_name}.so
-
-cat > %{buildroot}%{_httpd_modconfdir}/%{load_order}_%{mod_name}.conf <<EOF
-LoadModule php_module modules/%{mod_name}.so
-
-AddType application/x-httpd-php .php
-AddType application/x-httpd-php .phtml
-AddType application/x-httpd-php-source .phps
-
-DirectoryIndex index.php index.phtml
-EOF
 
 # lib64 hack
 perl -pi -e "s|/usr/lib|%{_libdir}|" \
@@ -1891,6 +1854,7 @@ find %{buildroot}%{_usrsrc}/php-devel -type f -size 0 -exec rm -f {} \;
 
 %multiarch_includes %{buildroot}%{_includedir}/php/main/php_config.h
 
+%check
 %if %{build_test}
 # do a make test
 export NO_INTERACTION=1
@@ -1972,7 +1936,7 @@ TEST_PHP_EXECUTABLE=sapi/cli/php sapi/cli/php -n -c ./php-test.ini run-tests.php
 systemctl reload-or-try-restart httpd.service || :
 
 %files doc
-%doc CREDITS INSTALL LICENSE NEWS Zend/ZEND_LICENSE 
+%doc CREDITS INSTALL LICENSE NEWS Zend/ZEND_LICENSE
 %doc php.ini-production php.ini-development
 %doc README.openssl README.spl CREDITS.libxml CREDITS.zlib
 %doc README.EXT_SKEL README.input_filter
@@ -1992,7 +1956,7 @@ systemctl reload-or-try-restart httpd.service || :
 %{_httpd_moddir}/mod_php.so
 
 %files -n %{libname}
-%{_libdir}/libphp7_common.so.%{php7_common_major}*
+%{_libdir}/libphp%{php_common_major}_common.so.%{php_common_major}*
 
 %files cli
 %doc CREDITS.cli README.cli TODO.cli
@@ -2007,10 +1971,10 @@ systemctl reload-or-try-restart httpd.service || :
 
 %files devel
 %doc SELF-CONTAINED-EXTENSIONS CODING_STANDARDS README.* EXTENSIONS
-%doc Zend/ZEND_* README.TESTING*
+%doc Zend/ZEND_*
 %{_bindir}/php-config
 %{_bindir}/phpize
-%{_libdir}/libphp7_common.so
+%{_libdir}/libphp%{php_common_major}_common.so
 %{_libdir}/php/build
 %{_usrsrc}/php-devel
 %{multiarch_includedir}/php/main/build-defs.h
@@ -2274,13 +2238,15 @@ systemctl reload-or-try-restart httpd.service || :
 %{_libdir}/php/extensions/zip.so
 
 %files fpm
-%doc sapi/fpm/CREDITS sapi/fpm/LICENSE
+%doc sapi/fpm/CREDITS sapi/fpm/LICENSE sapi/fpm/status.html
 %{_unitdir}/php-fpm.service
+%config(noreplace) %{_httpd_modconfdir}/00-php-fpm.conf
 %config(noreplace) %{_sysconfdir}/php-fpm.conf
 %config(noreplace) %{_sysconfdir}/sysconfig/php-fpm
 %{_sysconfdir}/logrotate.d/php-fpm
 %dir %{_sysconfdir}/php-fpm.d
 %config(noreplace) %{_sysconfdir}/php-fpm.d/default.conf
+%config(noreplace) %{_sysconfdir}/php-fpm.d/www.conf
 %{_sbindir}/php-fpm
 %{_mandir}/man8/php-fpm.8*
 %attr(0711,apache,apache) %dir /var/lib/php-fpm
@@ -2293,8 +2259,15 @@ systemctl reload-or-try-restart httpd.service || :
 %{_bindir}/phpdbg
 %{_mandir}/man1/phpdbg.1*
 
+
 %changelog
-* Thu Oct 31 2017 Tomás Flores <cognitus> - 7.1.11-1.mga6
+* Tue Nov 21 2017 Tomás Flores <cognitus> - 7.1.11-3.mga6
+- Homologate spec and patches from mageia
+
+* Thu Nov 16 2017 Tomás Flores <cognitus> - 7.1.11-2.mga6
+- Fix error pdo_mysql
+
+* Tue Oct 31 2017 Tomás Flores <cognitus> - 7.1.11-1.mga6
 - Disable zts
 - 7.1.11
 
