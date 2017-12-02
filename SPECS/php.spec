@@ -3,7 +3,7 @@
 %define mod_name mod_php
 %define load_order 70
 
-%define build_test 0
+%define build_test 1
 %{?_with_test: %{expand: %%global build_test 1}}
 %{?_without_test: %{expand: %%global build_test 0}}
 
@@ -24,8 +24,8 @@
 
 Summary:	The PHP scripting language
 Name:		php
-Version:	7.1.11
-Release:	%mkrel 3
+Version:	7.1.12
+Release:	%mkrel 1
 Source0:	http://php.net/distributions/php-%{version}.tar.xz
 Group:		Development/PHP
 License:	PHP License
@@ -49,7 +49,7 @@ Patch6:		php5-apache2-filters.diff
 Patch7:		php-no_libedit.diff
 Patch8:		php-xmlrpc_epi.patch
 Patch9:		php-xmlrpc_no_rpath.diff
-Patch11:	php-7.0.3-libdb.diff
+Patch11:	php-7.0.2RC1-libdb.diff
 # submitted as https://github.com/php/php-src/pull/361
 Patch12:	php-5.5.0-mysqlnd-unix-sock-addr.patch
 Patch13:	php-7.0.1-clang-warnings.patch
@@ -86,7 +86,6 @@ Patch121:	php-bug43221.diff
 Patch123:	php-bug43589.diff
 Patch226:	php-no-fvisibility_hidden_fix.diff
 Patch227:	php-5.3.0RC1-enchant_lib64_fix.diff
-Patch228:	php-5.3.0RC2-xmlrpc-epi_fix.diff
 Patch229:	php-7.0.2RC1-session.use_strict_mode.diff
 #Stolen from remi
 Patch230: php-7.0.0-includedir.patch
@@ -168,7 +167,7 @@ most common use of PHP coding is probably as a replacement for CGI scripts.
 
 %package	ini
 Summary:	INI files for PHP
-Group:		Development/Other
+Group:		Development/PHP
 
 %description	ini
 The php-ini package contains the ini file required for PHP.
@@ -252,8 +251,23 @@ install the apache-mod_php package.
 
 %package	cgi
 Summary:	PHP CGI interface
-Group:		Development/Other
+Group:		Development/PHP
 Requires:	%{libname} >= %{epoch}:%{version}
+Provides:	php = %{epoch}:%{version}
+Provides:	php-fcgi = %{epoch}:%{version}-%{release}
+Provides:	php-pcre = %{epoch}:%{version}
+Provides:	php-simplexml = %{epoch}:%{version}
+
+%description	cgi
+PHP is an HTML-embeddable scripting language. PHP offers built-in database
+integration for several commercial and non-commercial database management
+systems, so writing a database-enabled script with PHP is fairly simple. The
+most common use of PHP coding is probably as a replacement for CGI scripts.
+
+This package contains a standalone (CGI) version of php with FastCGI support.
+You must also install %{libname}. If you need apache module support, you
+also need to install the apache-mod_php package.
+
 Requires:	php-ctype >= %{epoch}:%{version}
 Requires:	php-filter >= %{epoch}:%{version}
 Requires:	php-ftp >= %{epoch}:%{version}
@@ -273,26 +287,77 @@ Requires:	php-xmlreader >= %{epoch}:%{version}
 Requires:	php-xmlwriter >= %{epoch}:%{version}
 Requires:	php-zlib >= %{epoch}:%{version}
 Requires:	php-xml >= %{epoch}:%{version}
+#obsoletes added for #2017
 Obsoletes:	php-mcal < 0.6-51
-Provides:	php-fcgi = %{epoch}:%{version}-%{release}
+Obsoletes:	php-pear-Horde
+Obsoletes:	php-docblock
+Obsoletes:	php-pear-PHP_Parser_DocblockParser
+Obsoletes:	php-pear-PHP_Parser
+Obsoletes:	php-amf
+Obsoletes:	php-apacheaccessor
+Obsoletes:	php-auth_nds
+Obsoletes:	php-awl
+Obsoletes:	php-bbcode
+Obsoletes:	php-bloomy
+Obsoletes:	php-braille
+Obsoletes:	php-cairo
+Obsoletes:	php-cairo_wrapper
+Obsoletes:	php-cyrus
+Obsoletes:	php-dav
+Obsoletes:	php-dbx
+Obsoletes:	php-docblock
+Obsoletes:	php-doublemetaphone
+Obsoletes:	php-ecasound
+Obsoletes:	php-esmtp
+Obsoletes:	php-fam
+Obsoletes:	php-gearman < 1.1.3
+Obsoletes:	php-gnutls
+Obsoletes:	php-haru
+Obsoletes:	php-hidef
+Obsoletes:	php-htscanner
+Obsoletes:	php-id3
+Obsoletes:	php-inclued
+Obsoletes:	php-layersmenu
+Obsoletes:	php-libevent
+Obsoletes:	php-magickwand
+Obsoletes:	php-mcal
+Obsoletes:	php-mdbtools
+Obsoletes:	php-ming
+Obsoletes:	php-mongo
+Obsoletes:	php-mssql
+Obsoletes:	php-netools
+Obsoletes:	php-newt
+Obsoletes:	php-oggvorbis
+Obsoletes:	php-optimizer
+Obsoletes:	php-pam
+Obsoletes:	php-pimple
+Obsoletes:	php-pluf
+Obsoletes:	php-sasl
+Obsoletes:	php-suhosin
+Obsoletes:	php-swish
+Obsoletes:	php-sybase_ct
+Obsoletes:	php-symfony-YAML
+Obsoletes:	php-syslog-ng
+Obsoletes:	php-tclink
+Obsoletes:	php-timezonedb
+Obsoletes:	php-txforward
+Obsoletes:	php-uploadprogress
+Obsoletes:	php-wbxml
+Obsoletes:	php-ZendFramework
+Obsoletes:	php-ZendFramework2
+Obsoletes:	php-zendframework-zend-cache
+Obsoletes:	php-zendframework-zend-db
+Obsoletes:	php-zendframework-zend-eventmanager
+Obsoletes:	php-zendframework-zend-i18n
+Obsoletes:	php-zendframework-zend-loader
+Obsoletes:	php-zendframework-zend-servicemanager
+Obsoletes:	php-zendframework-zend-stdlib
 # because of a added compat softlink
-Conflicts:	php-fcgi < %{epoch}:%{version}-%{release}
-
-%description	cgi
-PHP is an HTML-embeddable scripting language. PHP offers built-in database
-integration for several commercial and non-commercial database management
-systems, so writing a database-enabled script with PHP is fairly simple. The
-most common use of PHP coding is probably as a replacement for CGI scripts.
-
-This package contains a standalone (CGI) version of php with FastCGI support.
-You must also install %{libname}. If you need apache module support, you
-also need to install the apache-mod_php package.
+Obsoletes:	php-fcgi < %{epoch}:%{version}-%{release}
 
 %package -n	%{libname}
 Summary:	Shared library for PHP
-Group:		Development/Other
-Provides:	php-pcre = %{epoch}:%{version}
-Provides:	php-simplexml = %{epoch}:%{version}
+Group:		Development/PHP
 
 %description -n	%{libname}
 This package provides the common files to run with different implementations of
@@ -765,6 +830,7 @@ Group:		Development/PHP
 URL:		http://www.php.net/opcache
 Requires:	%{libname} >= %{epoch}:%{version}
 Obsoletes:	php-xcache < 3.2.1
+Obsoletes:	php-xcache-admin < 3.2.1
 
 %description	opcache
 This is a dynamic shared object (DSO) for PHP that will add OPcache support.
@@ -1348,7 +1414,6 @@ export LANGUAGES=en_US.utf-8
 %patch123 -p1 -b .bug43589.droplet
 %patch226 -p1 -b .no-fvisibility_hidden.droplet
 %patch227 -p0 -b .enchant_lib64_fix.droplet
-%patch228 -p0 -b .xmlrpc-epi_fix.droplet
 %patch229 -p1 -b .session.use_strict_mode.droplet
 
 #Stolen from remi - Build fixes
@@ -2261,6 +2326,11 @@ systemctl reload-or-try-restart httpd.service || :
 
 
 %changelog
+* Sat Dec 02 2017 Tomás Flores <cognitus> - 7.1.12-1.mga6
+- PHP 7.1.12
+- remove redundant diff
+- Update spec and diff according to package of mageia7
+
 * Tue Nov 21 2017 Tomás Flores <cognitus> - 7.1.11-3.mga6
 - Homologate spec and patches from mageia
 

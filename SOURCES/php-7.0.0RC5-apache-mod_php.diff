@@ -75,9 +75,24 @@ diff -Naur php-7.1.11.orig/sapi/apache2handler/php_apache.h php-7.1.11/sapi/apac
  
  /* A way to specify the location of the php.ini dir in an apache directive */
  extern char *apache2_php_ini_path_override;
-diff -Naur php-7.1.11.orig/sapi/apache2handler/php.sym php-7.1.11/sapi/apache2handler/php.sym
---- php-7.1.11.orig/sapi/apache2handler/php.sym	2017-11-22 16:55:42.620007489 -0300
-+++ php-7.1.11/sapi/apache2handler/php.sym	2017-11-22 17:13:05.587058926 -0300
+diff -Naurp php-7.1.11/sapi/apache2handler/php_apache.h.rej BUILD/php-7.1.11/sapi/apache2handler/php_apache.h.rej
+--- php-7.1.11/sapi/apache2handler/php_apache.h.rej	1970-01-01 01:00:00.000000000 +0100
++++ BUILD/php-7.1.11/sapi/apache2handler/php_apache.h.rej	2017-10-29 23:14:04.849912457 +0100
+@@ -0,0 +1,11 @@
++--- sapi/apache2handler/php_apache.h	2015-10-14 18:04:53.000000000 +0200
+++++ sapi/apache2handler/php_apache.h	2015-10-22 17:18:39.523957881 +0200
++@@ -29,7 +29,7 @@
++ #include "main/php_streams.h"
++ 
++ /* Declare this so we can get to it from outside the sapi_apache2.c file */
++-extern module AP_MODULE_DECLARE_DATA php7_module;
+++extern module AP_MODULE_DECLARE_DATA php_module;
++ 
++ /* A way to specify the location of the php.ini dir in an apache directive */
++ extern char *apache2_php_ini_path_override;
+diff -Naurp php-7.1.11/sapi/apache2handler/php.sym BUILD/php-7.1.11/sapi/apache2handler/php.sym
+--- php-7.1.11/sapi/apache2handler/php.sym	2017-10-25 09:04:42.000000000 +0200
++++ BUILD/php-7.1.11/sapi/apache2handler/php.sym	2017-10-29 23:14:04.850912457 +0100
 @@ -1 +1 @@
 -php7_module
 +php_module

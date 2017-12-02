@@ -1,7 +1,7 @@
 # php7.1-mga 
 
 
-RPM Spec, patch and diff files for build php 7.1.11 (27 Oct 2017) in Mageia 6
+RPM Spec, patch and diff files for build php 7.1.12 (24 Nov 2017) in Mageia 6
 
 
 After install, the package [php-timezonedb](https://madb.mageia.org/package/show/name/php-timezonedb/application/0/arch/x86_64) and all the php extension as
