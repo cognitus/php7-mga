@@ -24,7 +24,7 @@
 
 Summary:	The PHP scripting language
 Name:		php
-Version:	7.1.12
+Version:	7.1.13
 Release:	%mkrel 1
 Source0:	http://php.net/distributions/php-%{version}.tar.xz
 Group:		Development/PHP
@@ -1489,8 +1489,9 @@ rm -rf ext/xmlrpc/libxmlrpc
 %build
 %serverbuild
 
-export CFLAGS="${CFLAGS} -fno-strict-aliasing"
+export CFLAGS="${CFLAGS} -fno-strict-aliasing -fvisibility=default"
 export LDFLAGS="%{ldflags}"
+export CXXFLAGS="${CXXFLAGS} -fvisibility=default -fvisibility-inlines-hidden"
 
 cat > php-devel/buildext <<EOF
 #!/bin/bash
@@ -1669,7 +1670,7 @@ rm -f %{buildroot}%{_bindir}/php %{buildroot}%{_bindir}/php-cgi %{buildroot}%{_b
 ./libtool --silent --mode=install install sapi/cgi/php-cgi %{buildroot}%{_bindir}/php-cgi
 ./libtool --silent --mode=install install sapi/phpdbg/phpdbg %{buildroot}%{_bindir}/phpdbg
 
-# compat php-fcgi symink
+# compat php-fcgi symlink
 ln -s php-cgi %{buildroot}%{_bindir}/php-fcgi
 
 cp -dpR php-devel/* %{buildroot}%{_usrsrc}/php-devel/
@@ -2326,6 +2327,9 @@ systemctl reload-or-try-restart httpd.service || :
 
 
 %changelog
+* Mon Jan 15 2018 Tomás Flores <cognitus> - 7.1.13-1.mga6
+- Update to php 7.1.13 
+
 * Sat Dec 02 2017 Tomás Flores <cognitus> - 7.1.12-1.mga6
 - PHP 7.1.12
 - remove redundant diff
