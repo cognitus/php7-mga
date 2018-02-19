@@ -54,3 +54,23 @@ Remember use with your own user
 $ cd  ~/rpmbuild/SPECS
 $ rpmbuild -ba php.spec
 ```
+
+### Install
+
+
+```
+ $ cd ~/rpmbuild/RPMS/{Arch}/
+```
+if you want, remove debuginfo packages
+
+```
+ $ rm ./*debuginfo*.rpm
+```
+and install
+
+```
+ # urpmi ./lib64php_common7-{version}.mga6.x86_64.rpm
+ # urpmi ./php-*
+ # urpmi ./apache-mod_php-7.{version}.mga6.x86_64.rpm
+ ```
+ 

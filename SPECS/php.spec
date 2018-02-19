@@ -24,7 +24,7 @@
 
 Summary:	The PHP scripting language
 Name:		php
-Version:	7.1.13
+Version:	7.1.14
 Release:	%mkrel 1
 Source0:	http://php.net/distributions/php-%{version}.tar.xz
 Group:		Development/PHP
@@ -2327,6 +2327,9 @@ systemctl reload-or-try-restart httpd.service || :
 
 
 %changelog
+* Mon Feb 19 2018 Tomás Flores <cognitus> - 7.1.14-1.mga6
+- Update to php 7.1.14 
+
 * Mon Jan 15 2018 Tomás Flores <cognitus> - 7.1.13-1.mga6
 - Update to php 7.1.13 
 
